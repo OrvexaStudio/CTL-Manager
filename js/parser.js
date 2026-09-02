@@ -1,2520 +1,1177 @@
-```javascript
 /*
-    ============================================================
-    CTL MANAGER
-    parser.js
-
-    Parser intelligente per:
-
-    - messaggi WhatsApp copiati
-    - testo libero
-    - trascrizioni vocali
-    - informazioni scritte in ordine casuale
-
-    Obiettivo:
-    estrarre solamente le informazioni che possono essere
-    riconosciute con sufficiente sicurezza.
-
-    Il parser NON salva direttamente la prenotazione.
-
-    Restituisce invece un risultato che deve essere mostrato
-    all'utente per la verifica prima della conferma.
-    ============================================================
-*/
-
-"use strict";
-
-
-/* ============================================================
-   COSTANTI
-   ============================================================ */
-
-const PARSER_MONTHS = {
-
-    gennaio: 0,
-    febbraio: 1,
-    marzo: 2,
-    aprile: 3,
-    maggio: 4,
-    giugno: 5,
-    luglio: 6,
-    agosto: 7,
-    settembre: 8,
-    ottobre: 9,
-    novembre: 10,
-    dicembre: 11
-
-};
-
-
-const PARSER_MONTH_ALIASES = {
-
-    gen: "gennaio",
-    feb: "febbraio",
-    mar: "marzo",
-    apr: "aprile",
-    mag: "maggio",
-    giu: "giugno",
-    lug: "luglio",
-    ago: "agosto",
-    set: "settembre",
-    ott: "ottobre",
-    nov: "novembre",
-    dic: "dicembre"
-
-};
-
-
-/* ============================================================
-   NORMALIZZAZIONE TESTO
-   ============================================================ */
-
-function parserNormalizeText(text) {
-
-    if (
-        text === null ||
-        text === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    return String(text)
-        .replace(/\r/g, "\n")
-        .replace(/[“”«»]/g, '"')
-        .replace(/[‘’]/g, "'")
-        .replace(/\u00A0/g, " ")
-        .replace(/[ \t]+/g, " ")
-        .replace(/\n{3,}/g, "\n\n")
-        .trim();
-
-}
-
-
-/**
- * Versione del testo utile per confrontare parole
- * senza preoccuparsi di maiuscole/minuscole.
+ * =========================================================
+ * CTL MANAGER
+ * Smart Input Parser
+ * =========================================================
  */
-function parserSimplify(text) {
 
-    return parserNormalizeText(text)
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
+(function (window) {
+    "use strict";
 
-}
+    const Utils = window.CTLUtils || {};
 
+    const cleanText =
+        Utils.cleanText ||
+        (value => String(value ?? "").trim());
 
-/* ============================================================
-   RISULTATO BASE
-   ============================================================ */
+    const normalizeTime =
+        Utils.normalizeTime ||
+        (value => value || "");
 
-function createEmptyParseResult() {
+    const capitalizeWords =
+        Utils.capitalizeWords ||
+        (value => value || "");
 
-    return {
+    /*
+     * =====================================================
+     * COSTANTI
+     * =====================================================
+     */
 
-        firstName: "",
-        lastName: "",
-
-        phone: "",
-
-        departure: "",
-        destination: "",
-
-        date: "",
-        time: "",
-
-        passengers: "",
-
-        notes: "",
-
-        confidence: {
-
-            firstName: 0,
-            lastName: 0,
-            phone: 0,
-            departure: 0,
-            destination: 0,
-            date: 0,
-            time: 0,
-            passengers: 0,
-            notes: 0
-
-        },
-
-        warnings: [],
-
-        detectedFields: [],
-
-        rawText: "",
-
-        overallConfidence: 0
-
+    const MONTHS = {
+        gennaio: 1,
+        febbraio: 2,
+        marzo: 3,
+        aprile: 4,
+        maggio: 5,
+        giugno: 6,
+        luglio: 7,
+        agosto: 8,
+        settembre: 9,
+        ottobre: 10,
+        novembre: 11,
+        dicembre: 12
     };
 
-}
+    const WEEKDAYS = {
+        domenica: 0,
+        lunedi: 1,
+        lunedì: 1,
+        martedi: 2,
+        martedì: 2,
+        mercoledi: 3,
+        mercoledì: 3,
+        giovedi: 4,
+        giovedì: 4,
+        venerdi: 5,
+        venerdì: 5,
+        sabato: 6
+    };
+
+    const SPOKEN_NUMBERS = {
+        zero: 0,
+        uno: 1,
+        una: 1,
+        due: 2,
+        tre: 3,
+        quattro: 4,
+        cinque: 5,
+        sei: 6,
+        sette: 7,
+        otto: 8,
+        nove: 9,
+        dieci: 10,
+        undici: 11,
+        dodici: 12,
+        tredici: 13,
+        quattordici: 14,
+        quindici: 15,
+        sedici: 16,
+        diciassette: 17,
+        diciotto: 18,
+        diciannove: 19,
+        venti: 20
+    };
 
 
-/* ============================================================
-   TELEFONO
-   ============================================================ */
+    /* =====================================================
+       UTILITY INTERNE
+       ===================================================== */
 
-function parsePhone(text) {
-
-    if (!text) {
-        return null;
+    function normalizeForSearch(value) {
+        return cleanText(value)
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[.,;!?()[\]{}]/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
     }
 
 
-    /*
-        Cerchiamo numeri italiani e internazionali.
-        Sono consentiti spazi, punti, parentesi e trattini.
-    */
-
-    const matches =
-        text.match(
-            /(?:\+|00)?\d[\d\s().-]{7,18}\d/g
-        );
-
-
-    if (!matches) {
-        return null;
-    }
-
-
-    for (const match of matches) {
-
-        const digits =
-            match.replace(
-                /\D/g,
-                ""
+    function escapeRegExp(value) {
+        return String(value)
+            .replace(
+                /[.*+?^${}()|[\]\\]/g,
+                "\\$&"
             );
+    }
 
 
-        /*
-            Scartiamo numeri troppo corti o troppo lunghi.
-        */
-        if (
-            digits.length < 8 ||
-            digits.length > 15
-        ) {
-
-            continue;
-
-        }
-
-
-        /*
-            Evitiamo di considerare date e orari come telefoni.
-        */
-        if (
-            digits.length <= 6
-        ) {
-
-            continue;
-
-        }
-
-
-        const normalized =
-            typeof normalizePhone === "function"
-                ? normalizePhone(match)
-                : match.trim();
-
+    function getToday() {
+        const date = new Date();
 
         return {
-
-            value: normalized,
-
-            confidence:
-                digits.length >= 9
-                    ? 0.98
-                    : 0.85
-
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,
+            day: date.getDate()
         };
-
     }
 
 
-    return null;
-
-}
-
-
-/* ============================================================
-   ORARIO
-   ============================================================ */
-
-function parseTime(text) {
-
-    if (!text) {
-        return null;
+    function pad(value) {
+        return String(value)
+            .padStart(2, "0");
     }
 
 
-    const simplified =
-        parserSimplify(text);
-
-
-    /*
-        Formato:
-        14:30
-        14.30
-        14 30
-    */
-
-    let match =
-        simplified.match(
-            /\b([01]?\d|2[0-3])\s*[:.]\s*([0-5]\d)\b/
-        );
-
-
-    if (match) {
-
-        const hours =
-            Number(match[1]);
-
-
-        const minutes =
-            Number(match[2]);
-
-
-        return {
-
-            value:
-                String(hours).padStart(2, "0") +
-                ":" +
-                String(minutes).padStart(2, "0"),
-
-            confidence: 0.99
-
-        };
-
-    }
-
-
-    /*
-        Formato:
-        ore 14
-        alle 14
-        h14
-        h 14
-    */
-
-    match =
-        simplified.match(
-            /\b(?:ore|ora|alle|h)\s*([01]?\d|2[0-3])\b/
-        );
-
-
-    if (match) {
-
-        const hours =
-            Number(match[1]);
-
-
-        return {
-
-            value:
-                String(hours).padStart(2, "0") +
-                ":00",
-
-            confidence: 0.88
-
-        };
-
-    }
-
-
-    /*
-        Formato colloquiale:
-        14
-        solamente se vicino a parole che indicano l'orario.
-    */
-
-    match =
-        simplified.match(
-            /\b(?:alle|ore)\s+([01]?\d|2[0-3])\b/
-        );
-
-
-    if (match) {
-
-        const hours =
-            Number(match[1]);
-
-
-        return {
-
-            value:
-                String(hours).padStart(2, "0") +
-                ":00",
-
-            confidence: 0.88
-
-        };
-
-    }
-
-
-    return null;
-
-}
-
-
-/* ============================================================
-   DATA
-   ============================================================ */
-
-function parseDate(text) {
-
-    if (!text) {
-        return null;
-    }
-
-
-    const original =
-        parserNormalizeText(text);
-
-
-    const simplified =
-        parserSimplify(original);
-
-
-    const today =
-        new Date();
-
-
-    /*
-        Oggi
-    */
-
-    if (/\boggi\b/.test(simplified)) {
-
-        return {
-
-            value:
-                formatDateISO(today),
-
-            confidence: 0.99
-
-        };
-
-    }
-
-
-    /*
-        Domani
-    */
-
-    if (/\bdomani\b/.test(simplified)) {
-
-        const date =
-            new Date(today);
-
-
-        date.setDate(
-            date.getDate() + 1
-        );
-
-
-        return {
-
-            value:
-                formatDateISO(date),
-
-            confidence: 0.99
-
-        };
-
-    }
-
-
-    /*
-        Dopodomani
-    */
-
-    if (
-        /\bdopodomani\b/.test(
-            simplified
-        )
+    function buildDate(
+        year,
+        month,
+        day
     ) {
-
-        const date =
-            new Date(today);
-
-
-        date.setDate(
-            date.getDate() + 2
+        const date = new Date(
+            year,
+            month - 1,
+            day
         );
 
-
-        return {
-
-            value:
-                formatDateISO(date),
-
-            confidence: 0.98
-
-        };
-
-    }
-
-
-    /*
-        Giorni della settimana.
-    */
-
-    const weekdayResult =
-        parseWeekdayDate(
-            simplified
-        );
-
-
-    if (weekdayResult) {
-
-        return weekdayResult;
-
-    }
-
-
-    /*
-        Formato:
-        02/09/2026
-        2/9/26
-        02-09-2026
-        2.9.2026
-    */
-
-    let match =
-        simplified.match(
-            /\b(\d{1,2})[\/.-](\d{1,2})(?:[\/.-](\d{2,4}))?\b/
-        );
-
-
-    if (match) {
-
-        const day =
-            Number(match[1]);
-
-
-        const month =
-            Number(match[2]);
-
-
-        let year =
-            match[3]
-                ? Number(match[3])
-                : today.getFullYear();
-
-
-        if (year < 100) {
-
-            year += 2000;
-
+        if (
+            date.getFullYear() !== year ||
+            date.getMonth() !== month - 1 ||
+            date.getDate() !== day
+        ) {
+            return "";
         }
 
+        return [
+            year,
+            pad(month),
+            pad(day)
+        ].join("-");
+    }
 
-        const date =
-            createValidDate(
-                year,
-                month - 1,
-                day
+
+    function normalizePhone(phone) {
+        if (!phone) {
+            return "";
+        }
+
+        let value = String(phone)
+            .replace(/[^\d+]/g, "");
+
+        if (
+            value.startsWith("0039")
+        ) {
+            value =
+                "+" +
+                value.slice(2);
+        }
+
+        if (
+            value.startsWith("39") &&
+            value.length >= 11
+        ) {
+            value =
+                "+" +
+                value;
+        }
+
+        return value;
+    }
+
+
+    function findPhone(text) {
+        const matches =
+            String(text).match(
+                /(?:\+39|0039|39)?[\s./-]*3\d(?:[\s./-]*\d){8,9}/g
             );
 
-
-        if (date) {
-
-            return {
-
-                value:
-                    formatDateISO(date),
-
-                confidence:
-                    match[3]
-                        ? 0.99
-                        : 0.94
-
-            };
-
+        if (!matches) {
+            return "";
         }
 
+        /*
+         * Prendiamo il primo numero sufficientemente
+         * plausibile.
+         */
+        for (const match of matches) {
+            const digits =
+                match.replace(/\D/g, "");
+
+            let national = digits;
+
+            if (
+                national.startsWith("0039")
+            ) {
+                national =
+                    national.slice(4);
+            } else if (
+                national.startsWith("39") &&
+                national.length > 10
+            ) {
+                national =
+                    national.slice(2);
+            }
+
+            if (
+                /^3\d{8,9}$/.test(
+                    national
+                )
+            ) {
+                return national;
+            }
+        }
+
+        return "";
     }
 
 
-    /*
-        Formato:
-        2 settembre
-        2 settembre 2026
-        2 set
-    */
+    /* =====================================================
+       DATA
+       ===================================================== */
 
-    match =
-        simplified.match(
-            /\b(\d{1,2})\s+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre|gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic)(?:\s+(\d{4}))?\b/
-        );
+    function parseDateFromText(text) {
+        const source =
+            normalizeForSearch(text);
 
+        const today =
+            getToday();
 
-    if (match) {
+        /*
+         * Oggi
+         */
+        if (
+            /\boggi\b/.test(source)
+        ) {
+            return buildDate(
+                today.year,
+                today.month,
+                today.day
+            );
+        }
 
-        const day =
-            Number(match[1]);
+        /*
+         * Domani
+         */
+        if (
+            /\bdomani\b/.test(source)
+        ) {
+            const date = new Date(
+                today.year,
+                today.month - 1,
+                today.day + 1
+            );
 
+            return buildDate(
+                date.getFullYear(),
+                date.getMonth() + 1,
+                date.getDate()
+            );
+        }
 
-        let monthName =
-            match[2];
+        /*
+         * Dopodomani
+         */
+        if (
+            /\bdopodomani\b/.test(source)
+        ) {
+            const date = new Date(
+                today.year,
+                today.month - 1,
+                today.day + 2
+            );
 
+            return buildDate(
+                date.getFullYear(),
+                date.getMonth() + 1,
+                date.getDate()
+            );
+        }
 
-        monthName =
-            PARSER_MONTH_ALIASES[
-                monthName
-            ] || monthName;
+        /*
+         * DD/MM/YYYY
+         */
+        let match =
+            source.match(
+                /\b(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})\b/
+            );
 
+        if (match) {
+            let day =
+                Number(match[1]);
 
-        const month =
-            PARSER_MONTHS[
-                monthName
-            ];
+            let month =
+                Number(match[2]);
 
+            let year =
+                Number(match[3]);
 
-        const year =
-            match[3]
-                ? Number(match[3])
-                : today.getFullYear();
+            if (year < 100) {
+                year += 2000;
+            }
 
-
-        const date =
-            createValidDate(
+            return buildDate(
                 year,
                 month,
                 day
             );
-
-
-        if (date) {
-
-            return {
-
-                value:
-                    formatDateISO(date),
-
-                confidence:
-                    match[3]
-                        ? 0.99
-                        : 0.94
-
-            };
-
         }
-
-    }
-
-
-    return null;
-
-}
-
-
-/**
- * Crea una data controllando che sia realmente valida.
- */
-function createValidDate(
-    year,
-    month,
-    day
-) {
-
-    const date =
-        new Date(
-            year,
-            month,
-            day
-        );
-
-
-    if (
-        date.getFullYear() !== year ||
-        date.getMonth() !== month ||
-        date.getDate() !== day
-    ) {
-
-        return null;
-
-    }
-
-
-    return date;
-
-}
-
-
-/**
- * Riconosce:
- * lunedì
- * martedì
- * mercoledì
- * ecc.
- */
-function parseWeekdayDate(
-    text
-) {
-
-    const weekdays = {
-
-        domenica: 0,
-        lunedi: 1,
-        martedi: 2,
-        mercoledi: 3,
-        giovedi: 4,
-        venerdi: 5,
-        sabato: 6
-
-    };
-
-
-    const today =
-        new Date();
-
-
-    for (
-        const [
-            name,
-            targetDay
-        ]
-        of Object.entries(weekdays)
-    ) {
-
-        if (
-            text.includes(name)
-        ) {
-
-            let difference =
-                targetDay -
-                today.getDay();
-
-
-            if (difference <= 0) {
-
-                difference += 7;
-
-            }
-
-
-            const date =
-                new Date(today);
-
-
-            date.setDate(
-                date.getDate() +
-                difference
-            );
-
-
-            return {
-
-                value:
-                    formatDateISO(date),
-
-                confidence: 0.90
-
-            };
-
-        }
-
-    }
-
-
-    return null;
-
-}
-
-
-/* ============================================================
-   PASSEGGERI
-   ============================================================ */
-
-function parsePassengers(text) {
-
-    if (!text) {
-        return null;
-    }
-
-
-    const simplified =
-        parserSimplify(text);
-
-
-    /*
-        Esempi:
-        2 pax
-        3 passeggeri
-        4 persone
-        siamo in 3
-        per 2
-    */
-
-    const patterns = [
-
-        /\b(\d{1,2})\s*(?:pax|passeggeri|passegger[io]|persone)\b/,
-
-        /\b(?:siamo|sono|saremo)\s+in\s+(\d{1,2})\b/,
-
-        /\b(?:per|da)\s+(\d{1,2})\s+(?:persone|passeggeri)\b/,
-
-        /\b(\d{1,2})\s*(?:posti|postazioni)\b/
-
-    ];
-
-
-    for (const pattern of patterns) {
-
-        const match =
-            simplified.match(
-                pattern
-            );
-
-
-        if (match) {
-
-            const number =
-                Number(match[1]);
-
-
-            if (
-                number >= 1 &&
-                number <= 50
-            ) {
-
-                return {
-
-                    value:
-                        String(number),
-
-                    confidence: 0.96
-
-                };
-
-            }
-
-        }
-
-    }
-
-
-    return null;
-
-}
-
-
-/* ============================================================
-   NOME
-   ============================================================ */
-
-function parseName(text) {
-
-    if (!text) {
-        return null;
-    }
-
-
-    const lines =
-        parserNormalizeText(text)
-            .split("\n")
-            .map(
-                line =>
-                    line.trim()
-            )
-            .filter(Boolean);
-
-
-    const simplified =
-        parserSimplify(text);
-
-
-    /*
-        Prima cerchiamo etichette esplicite.
-    */
-
-    const labelledPatterns = [
-
-        /\b(?:nome|cliente)\s*[:=-]\s*([A-Za-zÀ-ÿ' -]{2,60})/i,
-
-        /\b(?:passeggero|passeggera)\s*[:=-]\s*([A-Za-zÀ-ÿ' -]{2,60})/i,
-
-        /\b(?:sig\.?|signor|signora)\s+([A-Za-zÀ-ÿ' -]{2,60})/i
-
-    ];
-
-
-    for (
-        const pattern
-        of labelledPatterns
-    ) {
-
-        const match =
-            text.match(pattern);
-
-
-        if (match) {
-
-            const cleaned =
-                cleanParsedName(
-                    match[1]
-                );
-
-
-            if (cleaned) {
-
-                const parts =
-                    cleaned.split(" ");
-
-
-                return {
-
-                    firstName:
-                        parts[0] || "",
-
-                    lastName:
-                        parts
-                            .slice(1)
-                            .join(" "),
-
-                    confidence: 0.94
-
-                };
-
-            }
-
-        }
-
-    }
-
-
-    /*
-        Cerchiamo una riga che sembri
-        chiaramente un nome e cognome.
-    */
-
-    for (const line of lines) {
-
-        const clean =
-            cleanParsedName(
-                line
-            );
-
-
-        if (
-            !clean ||
-            clean.length < 3 ||
-            clean.length > 60
-        ) {
-
-            continue;
-
-        }
-
 
         /*
-            Non consideriamo righe che contengono
-            indirizzi, numeri, date o parole operative.
-        */
-
-        if (
-            /\d/.test(clean)
-        ) {
-
-            continue;
-
-        }
-
-
-        const lineSimplified =
-            parserSimplify(clean);
-
-
-        const blockedWords = [
-
-            "partenza",
-            "destinazione",
-            "da",
-            "a",
-            "alle",
-            "ore",
-            "oggi",
-            "domani",
-            "via",
-            "viale",
-            "piazza",
-            "telefono",
-            "tel",
-            "cell",
-            "passeggeri",
-            "persone"
-
-        ];
-
-
-        if (
-            blockedWords.some(
-                word =>
-                    lineSimplified
-                        .split(" ")
-                        .includes(word)
-            )
-        ) {
-
-            continue;
-
-        }
-
-
-        const parts =
-            clean.split(" ");
-
-
-        if (
-            parts.length >= 2 &&
-            parts.length <= 4
-        ) {
-
-            return {
-
-                firstName:
-                    parts[0],
-
-                lastName:
-                    parts
-                        .slice(1)
-                        .join(" "),
-
-                confidence: 0.68
-
-            };
-
-        }
-
-    }
-
-
-    return null;
-
-}
-
-
-function cleanParsedName(
-    value
-) {
-
-    return String(value || "")
-        .replace(
-            /^[\s:,-]+/,
-            ""
-        )
-        .replace(
-            /[\s,.;:-]+$/,
-            ""
-        )
-        .replace(
-            /\s+/g,
-            " "
-        )
-        .trim();
-
-}
-
-
-/* ============================================================
-   PARTENZA / DESTINAZIONE
-   ============================================================ */
-
-function parseLocations(text) {
-
-    if (!text) {
-
-        return {
-
-            departure: null,
-            destination: null
-
-        };
-
-    }
-
-
-    const result = {
-
-        departure: null,
-        destination: null
-
-    };
-
-
-    /*
-        Formati molto comuni:
-
-        Partenza: Lecce
-        Destinazione: Brindisi
-
-        Da Lecce a Brindisi
-
-        Partenza Lecce -> Destinazione Brindisi
-
-        Lecce -> Brindisi
-    */
-
-
-    const departurePatterns = [
-
-        /\b(?:partenza|pickup|pick-up|ritiro|da)\s*[:=-]\s*(.+?)(?=\n|$|\bdestinazione\b|\bper\b|\ba\b)/i,
-
-        /\b(?:partenza|pickup|pick-up|ritiro)\s+(.+?)(?=\n|$|\bdestinazione\b|\bper\b|\ba\b)/i
-
-    ];
-
-
-    const destinationPatterns = [
-
-        /\b(?:destinazione|dropoff|drop-off|arrivo|per)\s*[:=-]\s*(.+?)(?=\n|$|\bpartenza\b|\bda\b)/i,
-
-        /\b(?:destinazione|dropoff|drop-off|arrivo|per)\s+(.+?)(?=\n|$|\bpartenza\b|\bda\b)/i
-
-    ];
-
-
-    for (
-        const pattern
-        of departurePatterns
-    ) {
-
-        const match =
-            text.match(pattern);
-
+         * DD/MM senza anno
+         */
+        match =
+            source.match(
+                /\b(\d{1,2})[\/.-](\d{1,2})\b/
+            );
 
         if (match) {
+            const day =
+                Number(match[1]);
 
-            const value =
-                cleanLocation(
-                    match[1]
+            const month =
+                Number(match[2]);
+
+            let year =
+                today.year;
+
+            /*
+             * Se la data è già passata,
+             * assumiamo l'anno successivo.
+             */
+            const candidate =
+                new Date(
+                    year,
+                    month - 1,
+                    day
                 );
-
-
-            if (value) {
-
-                result.departure = {
-
-                    value,
-
-                    confidence: 0.95
-
-                };
-
-                break;
-
-            }
-
-        }
-
-    }
-
-
-    for (
-        const pattern
-        of destinationPatterns
-    ) {
-
-        const match =
-            text.match(pattern);
-
-
-        if (match) {
-
-            const value =
-                cleanLocation(
-                    match[1]
-                );
-
-
-            if (value) {
-
-                result.destination = {
-
-                    value,
-
-                    confidence: 0.95
-
-                };
-
-                break;
-
-            }
-
-        }
-
-    }
-
-
-    /*
-        Formato:
-        Da X a Y
-    */
-
-    const fromToMatch =
-        text.match(
-            /\bda\s+(.+?)\s+\ba\s+(.+?)(?=\n|$)/i
-        );
-
-
-    if (
-        fromToMatch &&
-        !result.departure &&
-        !result.destination
-    ) {
-
-        const departure =
-            cleanLocation(
-                fromToMatch[1]
-            );
-
-
-        const destination =
-            cleanLocation(
-                fromToMatch[2]
-            );
-
-
-        if (
-            departure &&
-            destination
-        ) {
-
-            result.departure = {
-
-                value: departure,
-
-                confidence: 0.93
-
-            };
-
-
-            result.destination = {
-
-                value: destination,
-
-                confidence: 0.93
-
-            };
-
-        }
-
-    }
-
-
-    /*
-        Formato:
-        X -> Y
-        X → Y
-        X - Y
-
-        Il trattino viene utilizzato solo quando
-        siamo abbastanza sicuri che separi due località.
-    */
-
-    if (
-        !result.departure ||
-        !result.destination
-    ) {
-
-        const arrowMatch =
-            text.match(
-                /(.+?)\s*(?:->|→|➜|⇒)\s*(.+?)(?=\n|$)/i
-            );
-
-
-        if (arrowMatch) {
-
-            const departure =
-                cleanLocation(
-                    arrowMatch[1]
-                );
-
-
-            const destination =
-                cleanLocation(
-                    arrowMatch[2]
-                );
-
 
             if (
-                departure &&
-                destination &&
-                !containsOperationalWords(
-                    departure
-                ) &&
-                !containsOperationalWords(
-                    destination
+                candidate <
+                new Date(
+                    today.year,
+                    today.month - 1,
+                    today.day
                 )
             ) {
-
-                if (!result.departure) {
-
-                    result.departure = {
-
-                        value: departure,
-
-                        confidence: 0.88
-
-                    };
-
-                }
-
-
-                if (!result.destination) {
-
-                    result.destination = {
-
-                        value: destination,
-
-                        confidence: 0.88
-
-                    };
-
-                }
-
+                year++;
             }
 
+            return buildDate(
+                year,
+                month,
+                day
+            );
         }
 
-    }
+        /*
+         * "15 settembre"
+         */
+        for (const [
+            monthName,
+            monthNumber
+        ] of Object.entries(MONTHS)) {
+            const pattern =
+                new RegExp(
+                    `\\b(\\d{1,2})\\s+${escapeRegExp(monthName)}\\b`,
+                    "i"
+                );
 
+            match =
+                source.match(pattern);
 
-    return result;
+            if (match) {
+                const day =
+                    Number(match[1]);
 
-}
+                let year =
+                    today.year;
 
+                const candidate =
+                    new Date(
+                        year,
+                        monthNumber - 1,
+                        day
+                    );
 
-/**
- * Pulisce una località.
- */
-function cleanLocation(
-    value
-) {
+                if (
+                    candidate <
+                    new Date(
+                        today.year,
+                        today.month - 1,
+                        today.day
+                    )
+                ) {
+                    year++;
+                }
 
-    if (!value) {
+                return buildDate(
+                    year,
+                    monthNumber,
+                    day
+                );
+            }
+        }
+
+        /*
+         * Giorni della settimana:
+         * "lunedì", "venerdì", ecc.
+         */
+        for (const [
+            dayName,
+            dayNumber
+        ] of Object.entries(WEEKDAYS)) {
+            const pattern =
+                new RegExp(
+                    `\\b${escapeRegExp(dayName)}\\b`,
+                    "i"
+                );
+
+            if (
+                pattern.test(source)
+            ) {
+                const todayDate =
+                    new Date(
+                        today.year,
+                        today.month - 1,
+                        today.day
+                    );
+
+                const currentDay =
+                    todayDate.getDay();
+
+                let difference =
+                    dayNumber -
+                    currentDay;
+
+                if (difference <= 0) {
+                    difference += 7;
+                }
+
+                const date =
+                    new Date(
+                        todayDate
+                    );
+
+                date.setDate(
+                    date.getDate() +
+                    difference
+                );
+
+                return buildDate(
+                    date.getFullYear(),
+                    date.getMonth() + 1,
+                    date.getDate()
+                );
+            }
+        }
+
         return "";
     }
 
 
-    let cleaned =
-        parserNormalizeText(
-            value
-        );
+    /* =====================================================
+       ORARIO
+       ===================================================== */
 
-
-    cleaned =
-        cleaned.replace(
-            /^(?:-|:|,)+/,
-            ""
-        );
-
-
-    cleaned =
-        cleaned.replace(
-            /(?:-|:|,)+$/,
-            ""
-        );
-
-
-    /*
-        Rimuoviamo eventuali informazioni
-        chiaramente appartenenti ad altri campi.
-    */
-
-    cleaned =
-        cleaned.replace(
-            /\b(?:telefono|tel|cell)\b.*$/i,
-            ""
-        );
-
-
-    cleaned =
-        cleaned.replace(
-            /\b(?:ore|alle)\s+\d{1,2}(?::\d{2})?.*$/i,
-            ""
-        );
-
-
-    return cleaned.trim();
-
-}
-
-
-/**
- * Parole che indicano che una stringa
- * non è probabilmente una località.
- */
-function containsOperationalWords(
-    value
-) {
-
-    const simplified =
-        parserSimplify(value);
-
-
-    const words = [
-
-        "telefono",
-        "cellulare",
-        "passeggeri",
-        "persone",
-        "cliente",
-        "nome",
-        "domani",
-        "oggi"
-
-    ];
-
-
-    return words.some(
-        word =>
-            simplified.includes(word)
-    );
-
-}
-
-
-/* ============================================================
-   NOTE
-   ============================================================ */
-
-function parseNotes(
-    text,
-    alreadyDetected
-) {
-
-    if (!text) {
-        return null;
-    }
-
-
-    const lines =
-        parserNormalizeText(text)
-            .split("\n")
-            .map(
-                line =>
-                    line.trim()
-            )
-            .filter(Boolean);
-
-
-    const noteLines = [];
-
-
-    for (const line of lines) {
-
-        const simplified =
-            parserSimplify(line);
-
+    function parseTimeFromText(text) {
+        const source =
+            normalizeForSearch(text);
 
         /*
-            Riconosciamo esplicitamente
-            le note.
-        */
+         * 14:30 / 14.30
+         */
+        let match =
+            source.match(
+                /\b([01]?\d|2[0-3])[:.](\d{2})\b/
+            );
 
-        if (
-            /^(nota|note|richiesta|richieste|info|informazioni|extra)\s*[:=-]/i
-                .test(line)
-        ) {
-
-            const value =
-                line
-                    .replace(
-                        /^(nota|note|richiesta|richieste|info|informazioni|extra)\s*[:=-]\s*/i,
-                        ""
-                    )
-                    .trim();
-
-
-            if (value) {
-
-                noteLines.push(
-                    value
-                );
-
-            }
-
-            continue;
-
+        if (match) {
+            return normalizeTime(
+                `${match[1]}:${match[2]}`
+            );
         }
 
-
         /*
-            Parole tipiche che indicano
-            una richiesta particolare.
-        */
+         * "alle 14"
+         */
+        match =
+            source.match(
+                /\b(?:alle|ore|h)\s*(\d{1,2})\b/
+            );
 
-        if (
-            simplified.includes(
-                "seggiolino"
-            ) ||
-            simplified.includes(
-                "bagaglio"
-            ) ||
-            simplified.includes(
-                "valigia"
-            ) ||
-            simplified.includes(
-                "animale"
-            ) ||
-            simplified.includes(
-                "sedia a rotelle"
-            ) ||
-            simplified.includes(
-                "attesa"
-            )
-        ) {
-
-            /*
-                Se la riga non è già stata
-                identificata come altro campo,
-                la consideriamo una possibile nota.
-            */
+        if (match) {
+            const hour =
+                Number(match[1]);
 
             if (
-                !lineLooksLikeDetectedField(
-                    line,
-                    alreadyDetected
-                )
+                hour >= 0 &&
+                hour <= 23
             ) {
-
-                noteLines.push(
-                    line
+                return (
+                    pad(hour) +
+                    ":00"
                 );
-
             }
-
         }
 
-    }
-
-
-    if (!noteLines.length) {
-
-        return null;
-
-    }
-
-
-    return {
-
-        value:
-            noteLines.join(" "),
-
-        confidence: 0.82
-
-    };
-
-}
-
-
-function lineLooksLikeDetectedField(
-    line,
-    detected
-) {
-
-    const simplified =
-        parserSimplify(line);
-
-
-    if (
-        detected.phone &&
-        /\d{7,}/.test(
-            simplified
-        )
-    ) {
-
-        return true;
-
-    }
-
-
-    if (
-        detected.date &&
-        /\d{1,2}[\/.-]\d{1,2}/.test(
-            simplified
-        )
-    ) {
-
-        return true;
-
-    }
-
-
-    if (
-        detected.time &&
-        /\d{1,2}[:.]\d{2}/.test(
-            simplified
-        )
-    ) {
-
-        return true;
-
-    }
-
-
-    return false;
-
-}
-
-
-/* ============================================================
-   PARSER PRINCIPALE
-   ============================================================ */
-
-function parseReservationText(
-    text
-) {
-
-    const result =
-        createEmptyParseResult();
-
-
-    result.rawText =
-        parserNormalizeText(
-            text
-        );
-
-
-    if (!result.rawText) {
-
-        result.warnings.push(
-            "Nessun testo da analizzare."
-        );
-
-        return result;
-
-    }
-
-
-    /*
-        --------------------------------------------------------
-        1. TELEFONO
-        --------------------------------------------------------
-    */
-
-    const phoneResult =
-        parsePhone(
-            result.rawText
-        );
-
-
-    if (phoneResult) {
-
-        result.phone =
-            phoneResult.value;
-
-
-        result.confidence.phone =
-            phoneResult.confidence;
-
-
-        result.detectedFields.push(
-            "phone"
-        );
-
-    }
-
-
-    /*
-        --------------------------------------------------------
-        2. DATA
-        --------------------------------------------------------
-    */
-
-    const dateResult =
-        parseDate(
-            result.rawText
-        );
-
-
-    if (dateResult) {
-
-        result.date =
-            dateResult.value;
-
-
-        result.confidence.date =
-            dateResult.confidence;
-
-
-        result.detectedFields.push(
-            "date"
-        );
-
-    }
-
-
-    /*
-        --------------------------------------------------------
-        3. ORA
-        --------------------------------------------------------
-    */
-
-    const timeResult =
-        parseTime(
-            result.rawText
-        );
-
-
-    if (timeResult) {
-
-        result.time =
-            timeResult.value;
-
-
-        result.confidence.time =
-            timeResult.confidence;
-
-
-        result.detectedFields.push(
-            "time"
-        );
-
-    }
-
-
-    /*
-        --------------------------------------------------------
-        4. PASSEGGERI
-        --------------------------------------------------------
-    */
-
-    const passengersResult =
-        parsePassengers(
-            result.rawText
-        );
-
-
-    if (passengersResult) {
-
-        result.passengers =
-            passengersResult.value;
-
-
-        result.confidence.passengers =
-            passengersResult.confidence;
-
-
-        result.detectedFields.push(
-            "passengers"
-        );
-
-    }
-
-
-    /*
-        --------------------------------------------------------
-        5. PARTENZA / DESTINAZIONE
-        --------------------------------------------------------
-    */
-
-    const locationsResult =
-        parseLocations(
-            result.rawText
-        );
-
-
-    if (locationsResult.departure) {
-
-        result.departure =
-            locationsResult
-                .departure
-                .value;
-
-
-        result.confidence.departure =
-            locationsResult
-                .departure
-                .confidence;
-
-
-        result.detectedFields.push(
-            "departure"
-        );
-
-    }
-
-
-    if (locationsResult.destination) {
-
-        result.destination =
-            locationsResult
-                .destination
-                .value;
-
-
-        result.confidence.destination =
-            locationsResult
-                .destination
-                .confidence;
-
-
-        result.detectedFields.push(
-            "destination"
-        );
-
-    }
-
-
-    /*
-        --------------------------------------------------------
-        6. NOME
-        --------------------------------------------------------
-    */
-
-    const nameResult =
-        parseName(
-            result.rawText
-        );
-
-
-    if (nameResult) {
-
-        result.firstName =
-            nameResult.firstName;
-
-
-        result.lastName =
-            nameResult.lastName;
-
-
-        result.confidence.firstName =
-            nameResult.confidence;
-
-
-        result.confidence.lastName =
-            nameResult.confidence;
-
-
-        result.detectedFields.push(
-            "name"
-        );
-
-    }
-
-
-    /*
-        --------------------------------------------------------
-        7. NOTE
-        --------------------------------------------------------
-    */
-
-    const notesResult =
-        parseNotes(
-            result.rawText,
-            result
-        );
-
-
-    if (notesResult) {
-
-        result.notes =
-            notesResult.value;
-
-
-        result.confidence.notes =
-            notesResult.confidence;
-
-
-        result.detectedFields.push(
-            "notes"
-        );
-
-    }
-
-
-    /*
-        --------------------------------------------------------
-        8. CONTROLLI DI SICUREZZA
-        --------------------------------------------------------
-    */
-
-    validateParseResult(
-        result
-    );
-
-
-    /*
-        --------------------------------------------------------
-        9. CONFIDENZA COMPLESSIVA
-        --------------------------------------------------------
-    */
-
-    result.overallConfidence =
-        calculateOverallConfidence(
-            result
-        );
-
-
-    return result;
-
-}
-
-
-/* ============================================================
-   VALIDAZIONE
-   ============================================================ */
-
-function validateParseResult(
-    result
-) {
-
-    /*
-        Se la data è nel passato, non la correggiamo
-        automaticamente.
-
-        Mostriamo invece un avviso.
-    */
-
-    if (
-        result.date &&
-        typeof isDateBeforeToday === "function" &&
-        isDateBeforeToday(
-            result.date
-        )
-    ) {
-
-        result.warnings.push(
-            "La data riconosciuta sembra essere nel passato."
-        );
-
-    }
-
-
-    /*
-        Telefono non valido.
-    */
-
-    if (
-        result.phone &&
-        typeof isValidPhone === "function" &&
-        !isValidPhone(
-            result.phone
-        )
-    ) {
-
-        result.warnings.push(
-            "Il numero di telefono riconosciuto potrebbe non essere valido."
-        );
-
-    }
-
-
-    /*
-        Partenza e destinazione uguali.
-    */
-
-    if (
-        result.departure &&
-        result.destination &&
-        parserSimplify(
-            result.departure
-        ) ===
-        parserSimplify(
-            result.destination
-        )
-    ) {
-
-        result.warnings.push(
-            "Partenza e destinazione risultano uguali."
-        );
-
-    }
-
-
-    /*
-        Ora valida.
-    */
-
-    if (
-        result.time &&
-        typeof normalizeTime === "function"
-    ) {
-
-        const normalized =
-            normalizeTime(
-                result.time
+        /*
+         * "alle 14 e 30"
+         */
+        match =
+            source.match(
+                /\b(?:alle|ore|h)\s*(\d{1,2})\s*(?:e|:)\s*(\d{1,2})\b/
             );
 
-
-        if (!normalized) {
-
-            result.warnings.push(
-                "L'orario riconosciuto non è valido."
+        if (match) {
+            return normalizeTime(
+                `${match[1]}:${match[2]}`
             );
-
         }
 
-    }
-
-
-    /*
-        Numero passeggeri.
-    */
-
-    if (result.passengers) {
-
-        const passengers =
-            Number(
-                result.passengers
+        /*
+         * "14 e 30"
+         */
+        match =
+            source.match(
+                /\b([01]?\d|2[0-3])\s+e\s+(\d{1,2})\b/
             );
 
+        if (match) {
+            return normalizeTime(
+                `${match[1]}:${match[2]}`
+            );
+        }
+
+        /*
+         * Espressioni:
+         * mezzogiorno
+         * mezzanotte
+         */
+        if (
+            /\bmezzogiorno\b/.test(source)
+        ) {
+            return "12:00";
+        }
 
         if (
-            !Number.isInteger(
-                passengers
-            ) ||
-            passengers < 1 ||
-            passengers > 50
+            /\bmezzanotte\b/.test(source)
         ) {
-
-            result.warnings.push(
-                "Il numero di passeggeri riconosciuto non sembra corretto."
-            );
-
+            return "00:00";
         }
 
-    }
+        /*
+         * "le 8"
+         */
+        match =
+            source.match(
+                /\b(?:le|per le)\s*(\d{1,2})\b/
+            );
 
-}
+        if (match) {
+            const hour =
+                Number(match[1]);
 
+            if (
+                hour >= 0 &&
+                hour <= 23
+            ) {
+                return pad(hour) + ":00";
+            }
+        }
 
-/* ============================================================
-   CONFIDENZA
-   ============================================================ */
-
-function calculateOverallConfidence(
-    result
-) {
-
-    const fields = [
-
-        "firstName",
-        "lastName",
-        "phone",
-        "departure",
-        "destination",
-        "date",
-        "time",
-        "passengers",
-        "notes"
-
-    ];
-
-
-    const detected = fields.filter(
-        field =>
-            result[field]
-    );
-
-
-    if (!detected.length) {
-
-        return 0;
-
+        return "";
     }
 
 
-    const total =
-        detected.reduce(
-            (
-                sum,
-                field
-            ) =>
-                sum +
-                (
-                    result.confidence[field] ||
-                    0
-                ),
-            0
-        );
+    /* =====================================================
+       PASSEGGERI
+       ===================================================== */
+
+    function parsePassengersFromText(text) {
+        const source =
+            normalizeForSearch(text);
+
+        /*
+         * "4 persone"
+         */
+        let match =
+            source.match(
+                /\b(\d{1,2})\s*(?:persone|persona|passeggeri|passeggero)\b/
+            );
+
+        if (match) {
+            return Number(match[1]);
+        }
+
+        /*
+         * "siamo in 4"
+         */
+        match =
+            source.match(
+                /\b(?:siamo|siamo in|per)\s+(\d{1,2})\b/
+            );
+
+        if (match) {
+            return Number(match[1]);
+        }
+
+        /*
+         * Numeri scritti in lettere.
+         */
+        for (const [
+            word,
+            number
+        ] of Object.entries(
+            SPOKEN_NUMBERS
+        )) {
+            const pattern =
+                new RegExp(
+                    `\\b${escapeRegExp(word)}\\s*(?:persone|persona|passeggeri|passeggero)\\b`
+                );
+
+            if (
+                pattern.test(source)
+            ) {
+                return number;
+            }
+        }
 
-
-    return Math.round(
-        (
-            total /
-            detected.length
-        ) *
-        100
-    );
-
-}
-
-
-/* ============================================================
-   SUGGERIMENTI
-   ============================================================ */
-
-/**
- * Restituisce i campi che sarebbe meglio
- * controllare manualmente.
- */
-function getParserReviewFields(
-    result
-) {
-
-    const fields = [];
-
-
-    const confidence =
-        result.confidence || {};
-
-
-    if (
-        result.firstName &&
-        confidence.firstName < 0.80
-    ) {
-
-        fields.push(
-            "firstName"
-        );
-
-    }
-
-
-    if (
-        result.lastName &&
-        confidence.lastName < 0.80
-    ) {
-
-        fields.push(
-            "lastName"
-        );
-
-    }
-
-
-    if (
-        result.departure &&
-        confidence.departure < 0.85
-    ) {
-
-        fields.push(
-            "departure"
-        );
-
-    }
-
-
-    if (
-        result.destination &&
-        confidence.destination < 0.85
-    ) {
-
-        fields.push(
-            "destination"
-        );
-
-    }
-
-
-    if (
-        result.date &&
-        confidence.date < 0.90
-    ) {
-
-        fields.push(
-            "date"
-        );
-
-    }
-
-
-    if (
-        result.time &&
-        confidence.time < 0.90
-    ) {
-
-        fields.push(
-            "time"
-        );
-
-    }
-
-
-    if (
-        result.passengers &&
-        confidence.passengers < 0.90
-    ) {
-
-        fields.push(
-            "passengers"
-        );
-
-    }
-
-
-    return fields;
-
-}
-
-
-/* ============================================================
-   TESTO DI RIEPILOGO
-   ============================================================ */
-
-function createParserSummary(
-    result
-) {
-
-    const lines = [];
-
-
-    if (
-        result.firstName ||
-        result.lastName
-    ) {
-
-        lines.push(
-            "Cliente: " +
-            [
-                result.firstName,
-                result.lastName
-            ]
-                .filter(Boolean)
-                .join(" ")
-        );
-
-    }
-
-
-    if (result.phone) {
-
-        lines.push(
-            "Telefono: " +
-            result.phone
-        );
-
-    }
-
-
-    if (result.departure) {
-
-        lines.push(
-            "Partenza: " +
-            result.departure
-        );
-
-    }
-
-
-    if (result.destination) {
-
-        lines.push(
-            "Destinazione: " +
-            result.destination
-        );
-
-    }
-
-
-    if (result.date) {
-
-        const formattedDate =
-            typeof formatLongDate === "function"
-                ? formatLongDate(
-                    result.date
-                )
-                : result.date;
-
-
-        lines.push(
-            "Data: " +
-            formattedDate
-        );
-
-    }
-
-
-    if (result.time) {
-
-        lines.push(
-            "Ora: " +
-            result.time
-        );
-
-    }
-
-
-    if (result.passengers) {
-
-        lines.push(
-            "Passeggeri: " +
-            result.passengers
-        );
-
-    }
-
-
-    if (result.notes) {
-
-        lines.push(
-            "Note: " +
-            result.notes
-        );
-
-    }
-
-
-    return lines.join(
-        "\n"
-    );
-
-}
-
-
-/* ============================================================
-   PARSER VOCALE
-   ============================================================ */
-
-/**
- * Il riconoscimento vocale del browser restituisce
- * normalmente una stringa.
-
- * Questa funzione permette di passare direttamente
- * la trascrizione al parser principale.
- */
-function parseVoiceTranscript(
-    transcript
-) {
-
-    return parseReservationText(
-        transcript
-    );
-
-}
-
-
-/* ============================================================
-   PARSER WHATSAPP
-   ============================================================ */
-
-/**
- * Analizza un messaggio WhatsApp copiato.
- *
- * Non tenta di collegarsi automaticamente a WhatsApp.
- * L'utente deve incollare il messaggio nell'app.
- */
-function parseWhatsAppMessage(
-    message
-) {
-
-    return parseReservationText(
-        message
-    );
-
-}
-
-
-/* ============================================================
-   VALIDAZIONE PRIMA DEL SALVATAGGIO
-   ============================================================ */
-
-/**
- * Determina se una prenotazione può essere proposta
- * per la conferma.
- *
- * Non richiede che tutti i campi siano compilati,
- * perché nell'app tutti i campi sono opzionali.
- */
-function validateParsedReservation(
-    result
-) {
-
-    const errors = [];
-
-
-    if (!result || typeof result !== "object") {
-
-        errors.push(
-            "Dati della prenotazione non validi."
-        );
-
-
-        return {
-
-            valid: false,
-            errors
-
-        };
-
-    }
-
-
-    /*
-        Non blocchiamo campi mancanti.
-        Segnaliamo solamente eventuali errori reali.
-    */
-
-    if (
-        result.date &&
-        !createValidDateFromISO(
-            result.date
-        )
-    ) {
-
-        errors.push(
-            "La data non è valida."
-        );
-
-    }
-
-
-    if (
-        result.time &&
-        typeof normalizeTime === "function" &&
-        !normalizeTime(
-            result.time
-        )
-    ) {
-
-        errors.push(
-            "L'orario non è valido."
-        );
-
-    }
-
-
-    if (
-        result.phone &&
-        typeof isValidPhone === "function" &&
-        !isValidPhone(
-            result.phone
-        )
-    ) {
-
-        errors.push(
-            "Il numero di telefono non è valido."
-        );
-
-    }
-
-
-    return {
-
-        valid:
-            errors.length === 0,
-
-        errors
-
-    };
-
-}
-
-
-function createValidDateFromISO(
-    value
-) {
-
-    if (
-        typeof parseDateISO === "function"
-    ) {
-
-        return Boolean(
-            parseDateISO(value)
-        );
-
-    }
-
-
-    return /^\d{4}-\d{2}-\d{2}$/.test(
-        value
-    );
-
-}
-
-
-/* ============================================================
-   CREAZIONE PRENOTAZIONE DAL RISULTATO
-   ============================================================ */
-
-/**
- * Converte il risultato del parser
- * in un oggetto compatibile con il sistema
- * delle prenotazioni.
- *
- * Il salvataggio vero e proprio viene effettuato
- * successivamente da app.js.
- */
-function parsedResultToBooking(
-    result
-) {
-
-    if (!result) {
         return null;
     }
 
 
-    const booking = {
+    /* =====================================================
+       NOMI
+       ===================================================== */
 
-        firstName:
-            cleanText(
-                result.firstName
-            ),
+    function parseNameFromText(text) {
+        const source =
+            cleanText(text);
 
-        lastName:
-            cleanText(
-                result.lastName
-            ),
+        /*
+         * "Mario Rossi"
+         * "cliente Mario Rossi"
+         * "per Mario Rossi"
+         */
+        const match =
+            source.match(
+                /\b(?:cliente|per|nome)\s+([A-Za-zÀ-ÖØ-öø-ÿ'’-]+)(?:\s+([A-Za-zÀ-ÖØ-öø-ÿ'’-]+))?\b/i
+            );
 
-        phone:
-            typeof normalizePhone === "function"
-                ? normalizePhone(
-                    result.phone
+        if (!match) {
+            return {
+                firstName: "",
+                lastName: ""
+            };
+        }
+
+        const firstName =
+            capitalizeWords(
+                match[1]
+            );
+
+        const lastName =
+            match[2]
+                ? capitalizeWords(match[2])
+                : "";
+
+        return {
+            firstName,
+            lastName
+        };
+    }
+
+
+    /* =====================================================
+       INDIRIZZI
+       ===================================================== */
+
+    function extractAfterKeyword(
+        source,
+        keywords
+    ) {
+        const normalized =
+            normalizeForSearch(source);
+
+        for (const keyword of keywords) {
+            const pattern =
+                new RegExp(
+                    `\\b${escapeRegExp(keyword)}\\b\\s+(.+?)(?=\\s+\\b(?:a|ad|verso|da|partenza|arrivo|alle|ore|il|domani|oggi|per)\\b|$)`,
+                    "i"
+                );
+
+            const match =
+                normalized.match(pattern);
+
+            if (
+                match &&
+                match[1]
+            ) {
+                return cleanText(
+                    match[1]
+                );
+            }
+        }
+
+        return "";
+    }
+
+
+    function parseAddressesFromText(text) {
+        const source =
+            cleanText(text);
+
+        const normalized =
+            normalizeForSearch(source);
+
+        let departure = "";
+        let arrival = "";
+
+        /*
+         * Pattern esplicito:
+         * "da X a Y"
+         */
+        let match =
+            normalized.match(
+                /\bda\s+(.+?)\s+\ba\s+(.+?)(?=\s+\b(?:il|alle|ore|oggi|domani|con|per)\b|$)/i
+            );
+
+        if (match) {
+            departure =
+                cleanText(match[1]);
+
+            arrival =
+                cleanText(match[2]);
+        }
+
+        /*
+         * "partenza X arrivo Y"
+         */
+        if (!departure) {
+            match =
+                normalized.match(
+                    /\bpartenza\s+(.+?)\s+\barrivo\s+(.+?)(?=\s+\b(?:il|alle|ore|oggi|domani|con|per)\b|$)/i
+                );
+
+            if (match) {
+                departure =
+                    cleanText(match[1]);
+
+                arrival =
+                    cleanText(match[2]);
+            }
+        }
+
+        /*
+         * "da X verso Y"
+         */
+        if (!departure) {
+            match =
+                normalized.match(
+                    /\bda\s+(.+?)\s+\b(?:verso|ad|a)\s+(.+?)(?=\s+\b(?:il|alle|ore|oggi|domani|con|per)\b|$)/i
+                );
+
+            if (match) {
+                departure =
+                    cleanText(match[1]);
+
+                arrival =
+                    cleanText(match[2]);
+            }
+        }
+
+        /*
+         * "X -> Y"
+         */
+        if (!departure) {
+            match =
+                source.match(
+                    /(.+?)\s*(?:->|→|=>)\s*(.+?)(?=\s+\b(?:il|alle|ore|oggi|domani|con|per)\b|$)/i
+                );
+
+            if (match) {
+                departure =
+                    cleanText(match[1]);
+
+                arrival =
+                    cleanText(match[2]);
+            }
+        }
+
+        /*
+         * "da: X a: Y"
+         */
+        if (!departure) {
+            match =
+                source.match(
+                    /\bda\s*:\s*(.+?)\s+\ba\s*:\s*(.+?)(?=\s+\b(?:il|alle|ore|oggi|domani|con|per)\b|$)/i
+                );
+
+            if (match) {
+                departure =
+                    cleanText(match[1]);
+
+                arrival =
+                    cleanText(match[2]);
+            }
+        }
+
+        /*
+         * Rimuoviamo eventuali etichette residue.
+         */
+        departure =
+            removeTrailingRideData(
+                departure
+            );
+
+        arrival =
+            removeTrailingRideData(
+                arrival
+            );
+
+        return {
+            departure,
+            arrival
+        };
+    }
+
+
+    function removeTrailingRideData(
+        value
+    ) {
+        return cleanText(
+            String(value ?? "")
+                .replace(
+                    /\s+\b(?:alle|ore)\s+\d{1,2}(?::|\.)?\d{0,2}\b.*$/i,
+                    ""
                 )
-                : cleanText(
-                    result.phone
-                ),
-
-        departure:
-            cleanText(
-                result.departure
-            ),
-
-        destination:
-            cleanText(
-                result.destination
-            ),
-
-        date:
-            cleanText(
-                result.date
-            ),
-
-        time:
-            typeof normalizeTime === "function"
-                ? normalizeTime(
-                    result.time
+                .replace(
+                    /\s+\b(?:oggi|domani|dopodomani)\b.*$/i,
+                    ""
                 )
-                : cleanText(
-                    result.time
-                ),
-
-        passengers:
-            cleanText(
-                result.passengers
-            ),
-
-        notes:
-            cleanText(
-                result.notes
-            )
-
-    };
+        );
+    }
 
 
-    return booking;
+    /* =====================================================
+       NOTE
+       ===================================================== */
 
-}
-```
+    function parseNotesFromText(text) {
+        const source =
+            cleanText(text);
+
+        const normalized =
+            normalizeForSearch(source);
+
+        const patterns = [
+            /\bnote?\s*[:\-]\s*(.+)$/i,
+            /\bcon\s+(.+)$/i,
+            /\bsegnala(?:re)?\s+(.+)$/i
+        ];
+
+        for (const pattern of patterns) {
+            const match =
+                normalized.match(pattern);
+
+            if (
+                match &&
+                match[1]
+            ) {
+                return cleanText(
+                    match[1]
+                );
+            }
+        }
+
+        return "";
+    }
+
+
+    /* =====================================================
+       PARSER PRINCIPALE
+       ===================================================== */
+
+    function parseRideText(text) {
+        const source =
+            cleanText(text);
+
+        if (!source) {
+            return createEmptyResult();
+        }
+
+        const date =
+            parseDateFromText(source);
+
+        const time =
+            parseTimeFromText(source);
+
+        const phone =
+            findPhone(source);
+
+        const passengers =
+            parsePassengersFromText(
+                source
+            );
+
+        const name =
+            parseNameFromText(source);
+
+        const addresses =
+            parseAddressesFromText(
+                source
+            );
+
+        const notes =
+            parseNotesFromText(source);
+
+        const result = {
+            firstName:
+                name.firstName || "",
+
+            lastName:
+                name.lastName || "",
+
+            phone:
+                phone || "",
+
+            departure:
+                addresses.departure || "",
+
+            arrival:
+                addresses.arrival || "",
+
+            date:
+                date || "",
+
+            time:
+                time || "",
+
+            passengers:
+                passengers || "",
+
+            notes:
+                notes || "",
+
+            confidence: {
+                firstName:
+                    name.firstName
+                        ? "medium"
+                        : "none",
+
+                lastName:
+                    name.lastName
+                        ? "medium"
+                        : "none",
+
+                phone:
+                    phone
+                        ? "high"
+                        : "none",
+
+                departure:
+                    addresses.departure
+                        ? "medium"
+                        : "none",
+
+                arrival:
+                    addresses.arrival
+                        ? "medium"
+                        : "none",
+
+                date:
+                    date
+                        ? "high"
+                        : "none",
+
+                time:
+                    time
+                        ? "high"
+                        : "none",
+
+                passengers:
+                    passengers
+                        ? "high"
+                        : "none",
+
+                notes:
+                    notes
+                        ? "low"
+                        : "none"
+            },
+
+            source
+        };
+
+        return result;
+    }
+
+
+    function createEmptyResult() {
+        return {
+            firstName: "",
+            lastName: "",
+            phone: "",
+            departure: "",
+            arrival: "",
+            date: "",
+            time: "",
+            passengers: "",
+            notes: "",
+
+            confidence: {
+                firstName: "none",
+                lastName: "none",
+                phone: "none",
+                departure: "none",
+                arrival: "none",
+                date: "none",
+                time: "none",
+                passengers: "none",
+                notes: "none"
+            },
+
+            source: ""
+        };
+    }
+
+
+    /* =====================================================
+       PARSER DA MESSAGGI WHATSAPP
+       ===================================================== */
+
+    function parseWhatsAppMessage(message) {
+        return parseRideText(
+            message
+        );
+    }
+
+
+    /* =====================================================
+       PARSER DA TESTO VOCALE
+       ===================================================== */
+
+    function parseVoiceText(transcript) {
+        return parseRideText(
+            transcript
+        );
+    }
+
+
+    /* =====================================================
+       MERGE INTELLIGENTE
+       ===================================================== */
+
+    function mergeParsedData(
+        currentData,
+        parsedData
+    ) {
+        const current =
+            currentData || {};
+
+        const parsed =
+            parsedData || {};
+
+        const fields = [
+            "firstName",
+            "lastName",
+            "phone",
+            "departure",
+            "arrival",
+            "date",
+            "time",
+            "passengers",
+            "notes"
+        ];
+
+        const result = {
+            ...current
+        };
+
+        for (const field of fields) {
+            const value =
+                cleanText(
+                    parsed[field]
+                );
+
+            if (!value) {
+                continue;
+            }
+
+            /*
+             * Non sovrascriviamo un dato già
+             * presente con un valore poco affidabile.
+             */
+            const confidence =
+                parsed.confidence?.[
+                    field
+                ];
+
+            if (
+                result[field] &&
+                confidence === "low"
+            ) {
+                continue;
+            }
+
+            result[field] =
+                value;
+        }
+
+        return result;
+    }
+
+
+    /* =====================================================
+       ANALISI RAPIDA
+       ===================================================== */
+
+    function analyze(text) {
+        const result =
+            parseRideText(text);
+
+        const detectedFields =
+            Object.keys(
+                result.confidence
+            ).filter(field => {
+                return (
+                    result.confidence[field] !==
+                    "none"
+                );
+            });
+
+        return {
+            ...result,
+            detectedFields,
+            hasUsefulData:
+                detectedFields.length > 0
+        };
+    }
+
+
+    /* =====================================================
+       PUBLIC API
+       ===================================================== */
+
+    window.CTLParser = Object.freeze({
+        parseRideText,
+        parseWhatsAppMessage,
+        parseVoiceText,
+        mergeParsedData,
+        analyze,
+
+        parseDateFromText,
+        parseTimeFromText,
+        parsePassengersFromText,
+        parseNameFromText,
+        parseAddressesFromText,
+        parseNotesFromText,
+
+        findPhone,
+
+        createEmptyResult
+    });
+
+})(window);
