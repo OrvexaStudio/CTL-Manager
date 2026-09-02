@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#102A43"
+    >
+
+    <meta
+        name="description"
+        content="Accesso a CTL Manager"
+    >
+
+    <title>Accesso - CTL Manager</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
+
+</head>
+
+
+<body class="auth-page">
+
+    <main class="auth-container">
+
+        <!--
+            Logo / identificativo applicazione
+        -->
+        <div class="auth-brand">
+
+            <div class="auth-logo">
+                CTL
+            </div>
+
+            <div class="auth-brand-name">
+                CTL Manager
+            </div>
+
+        </div>
+
+
+        <!--
+            Contenuto principale del login
+        -->
+        <section class="auth-card">
+
+            <div class="auth-card-header">
+
+                <span class="auth-eyebrow">
+                    BENVENUTO
+                </span>
+
+                <h1>
+                    Iniziamo
+                </h1>
+
+                <p>
+                    Inserisci il tuo nome per personalizzare
+                    CTL Manager e iniziare a gestire le tue corse.
+                </p>
+
+            </div>
+
+
+            <!--
+                Form di configurazione iniziale.
+                La gestione del salvataggio verrà effettuata
+                da storage.js e app.js.
+            -->
+            <form
+                id="login-form"
+                class="auth-form"
+                autocomplete="on"
+            >
+
+                <div class="form-group">
+
+                    <label
+                        for="driver-name"
+                    >
+                        Nome autista
+                    </label>
+
+                    <input
+                        type="text"
+                        id="driver-name"
+                        name="driverName"
+                        placeholder="Es. Francesco"
+                        autocomplete="name"
+                        maxlength="50"
+                        required
+                    >
+
+                    <p
+                        id="login-error"
+                        class="form-error"
+                        role="alert"
+                        hidden
+                    ></p>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="login-continue"
+                    class="btn btn-primary btn-large"
+                >
+                    Continua
+                </button>
+
+            </form>
+
+
+            <div class="auth-note">
+
+                <span class="auth-note-icon">
+                    ✓
+                </span>
+
+                <span>
+                    I tuoi dati vengono salvati
+                    direttamente sul dispositivo.
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <footer class="auth-footer">
+
+            <span>
+                CTL Manager
+            </span>
+
+            <span class="auth-footer-separator">
+                •
+            </span>
+
+            <span>
+                Gestione professionale delle corse
+            </span>
+
+        </footer>
+
+    </main>
+
+
+    <!--
+        Script condivisi dell'app.
+        Il percorso è relativo perché questa pagina
+        si trova all'interno della cartella /pages/.
+    -->
+    <script
+        src="../js/storage.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/utils.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/parser.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/app.js"
+        defer
+    ></script>
+
+</body>
+
+</html>
