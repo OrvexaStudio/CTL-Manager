@@ -1,217 +1,185 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
     <meta
         name="theme-color"
-        content="#102A43"
+        content="#f5f1eb"
     >
 
-    <meta
-        name="description"
-        content="CTL Manager - Home"
-    >
-
-    <title>Home - CTL Manager</title>
+    <title>CTL Manager — Home</title>
 
     <link
         rel="stylesheet"
         href="../css/style.css"
     >
-
 </head>
 
+<body class="app-body home-page">
 
-<body class="app-page">
+    <div class="app-shell">
 
-    <!--
-        Header principale
-    -->
-    <header class="app-header">
+        <!-- =================================================
+             HEADER
+             ================================================= -->
 
-        <div class="app-header-content">
+        <header class="app-header">
 
-            <div class="app-brand">
+            <div class="header-content">
 
-                <div class="app-brand-logo">
-                    CTL
-                </div>
+                <div class="header-copy">
+                    <span
+                        id="greeting"
+                        class="header-greeting"
+                    >
+                        Buongiorno
+                    </span>
 
-                <div class="app-brand-text">
-                    CTL Manager
-                </div>
-
-            </div>
-
-
-            <a
-                href="profilo.html"
-                class="header-profile-button"
-                aria-label="Apri profilo"
-            >
-                <span
-                    id="header-driver-initial"
-                    class="header-profile-initial"
-                >
-                    -
-                </span>
-            </a>
-
-        </div>
-
-    </header>
-
-
-    <!--
-        Contenuto principale
-    -->
-    <main class="app-main">
-
-        <!--
-            Saluto personalizzato
-        -->
-        <section class="home-greeting">
-
-            <div>
-
-                <span
-                    id="home-greeting-label"
-                    class="section-eyebrow"
-                >
-                    BUONGIORNO
-                </span>
-
-                <h1>
-                    Ciao,
-                    <span id="home-driver-name">
+                    <h1
+                        id="driverName"
+                        class="header-title"
+                    >
                         Autista
-                    </span>
-                </h1>
+                    </h1>
+                </div>
 
-                <p id="home-current-date">
-                    -
-                </p>
+                <a
+                    href="profilo.html"
+                    class="profile-button"
+                    aria-label="Apri profilo"
+                >
+                    <span
+                        id="profileInitial"
+                        class="profile-initial"
+                    >
+                        A
+                    </span>
+                </a>
 
             </div>
 
-        </section>
+        </header>
 
 
-        <!--
-            Card della prossima corsa
-        -->
-        <section class="next-ride-section">
+        <!-- =================================================
+             CONTENUTO PRINCIPALE
+             ================================================= -->
 
-            <div class="section-heading">
+        <main class="page-content">
 
-                <div>
+            <!-- =================================================
+                 PROSSIMA CORSA
+                 ================================================= -->
 
-                    <span class="section-eyebrow">
-                        PROSSIMA CORSA
-                    </span>
+            <section
+                class="next-ride-section"
+                aria-labelledby="nextRideTitle"
+            >
 
-                    <h2>
-                        Il tuo prossimo appuntamento
-                    </h2>
+                <div class="section-heading">
+
+                    <div>
+                        <span class="section-eyebrow">
+                            Prossimo servizio
+                        </span>
+
+                        <h2 id="nextRideTitle">
+                            Prossima corsa
+                        </h2>
+                    </div>
 
                 </div>
 
-            </div>
 
-
-            <article
-                id="next-ride-card"
-                class="next-ride-card"
-            >
-
-                <!--
-                    Stato mostrato quando esiste una prossima corsa.
-                    I dati vengono inseriti da JavaScript.
-                -->
-                <div
-                    id="next-ride-content"
-                    class="next-ride-content"
+                <article
+                    id="nextRideCard"
+                    class="next-ride-card"
+                    hidden
                 >
 
                     <div class="next-ride-top">
 
-                        <div>
-
+                        <div class="next-ride-date">
                             <span
-                                id="next-ride-date"
-                                class="next-ride-date"
+                                id="nextRideDate"
+                                class="ride-date"
                             >
-                                -
+                                —
                             </span>
 
-                            <div
-                                id="next-ride-time"
-                                class="next-ride-time"
+                            <span
+                                id="nextRideTime"
+                                class="ride-time"
                             >
                                 --:--
+                            </span>
+                        </div>
+
+                        <span
+                            id="nextRidePassengers"
+                            class="ride-passengers"
+                        >
+                            —
+                        </span>
+
+                    </div>
+
+
+                    <div class="route-display">
+
+                        <div class="route-point">
+
+                            <span
+                                class="route-marker route-marker-start"
+                                aria-hidden="true"
+                            ></span>
+
+                            <div class="route-text">
+
+                                <span class="route-label">
+                                    Partenza
+                                </span>
+
+                                <strong
+                                    id="nextRideDeparture"
+                                >
+                                    —
+                                </strong>
+
                             </div>
 
                         </div>
 
 
                         <div
-                            id="next-ride-passengers"
-                            class="ride-passengers"
-                        >
-                            -
-                        </div>
-
-                    </div>
-
-
-                    <div class="ride-route">
-
-                        <div class="route-point">
-
-                            <span class="route-marker route-marker-start">
-                                A
-                            </span>
-
-                            <div>
-
-                                <span class="route-label">
-                                    PARTENZA
-                                </span>
-
-                                <strong id="next-ride-departure">
-                                    -
-                                </strong>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="route-line"></div>
+                            class="route-line"
+                            aria-hidden="true"
+                        ></div>
 
 
                         <div class="route-point">
 
-                            <span class="route-marker route-marker-end">
-                                B
-                            </span>
+                            <span
+                                class="route-marker route-marker-end"
+                                aria-hidden="true"
+                            ></span>
 
-                            <div>
+                            <div class="route-text">
 
                                 <span class="route-label">
-                                    DESTINAZIONE
+                                    Arrivo
                                 </span>
 
-                                <strong id="next-ride-destination">
-                                    -
+                                <strong
+                                    id="nextRideArrival"
+                                >
+                                    —
                                 </strong>
 
                             </div>
@@ -221,355 +189,1163 @@
                     </div>
 
 
-                    <div class="next-ride-client">
+                    <div
+                        id="nextRideClient"
+                        class="ride-client"
+                        hidden
+                    >
 
                         <div class="client-info">
 
-                            <span class="client-avatar">
-                                <span id="next-ride-client-initial">
-                                    -
-                                </span>
+                            <span class="client-label">
+                                Passeggero
                             </span>
 
-                            <div>
-
-                                <span class="route-label">
-                                    CLIENTE
-                                </span>
-
-                                <strong id="next-ride-client-name">
-                                    -
-                                </strong>
-
-                            </div>
+                            <strong
+                                id="nextRideClientName"
+                            >
+                                —
+                            </strong>
 
                         </div>
 
-
                         <a
-                            id="next-ride-call"
-                            class="btn btn-call"
+                            id="nextRideCallButton"
+                            class="secondary-button call-button"
                             href="#"
                             hidden
                         >
-                            <span>
-                                ☎
-                            </span>
-
                             Chiama
                         </a>
 
                     </div>
 
-                </div>
+
+                    <div
+                        id="nextRideNotes"
+                        class="ride-notes"
+                        hidden
+                    >
+                        <span class="notes-label">
+                            Note
+                        </span>
+
+                        <p id="nextRideNotesText"></p>
+                    </div>
+
+                </article>
 
 
-                <!--
-                    Stato mostrato quando non ci sono corse.
-                -->
+                <!-- =================================================
+                     NESSUNA PROSSIMA CORSA
+                     ================================================= -->
+
                 <div
-                    id="next-ride-empty"
-                    class="empty-state next-ride-empty"
+                    id="noNextRide"
+                    class="empty-card"
                     hidden
                 >
 
-                    <div class="empty-state-icon">
-                        ✓
+                    <div class="empty-card-content">
+
+                        <span class="empty-card-title">
+                            Nessuna corsa in programma
+                        </span>
+
+                        <p>
+                            Non ci sono altre prenotazioni
+                            previste per oggi.
+                        </p>
+
                     </div>
 
-                    <h3>
-                        Nessuna corsa in programma
-                    </h3>
+                </div>
 
-                    <p>
-                        Non ci sono altre prenotazioni
-                        previste per oggi.
-                    </p>
+            </section>
+
+
+            <!-- =================================================
+                 RIEPILOGO GIORNALIERO
+                 ================================================= -->
+
+            <section
+                class="daily-summary-section"
+                aria-label="Riepilogo giornaliero"
+            >
+
+                <div class="daily-summary-card">
+
+                    <div class="summary-copy">
+
+                        <span class="summary-label">
+                            Oggi
+                        </span>
+
+                        <strong
+                            id="todayRideCount"
+                            class="summary-number"
+                        >
+                            0
+                        </strong>
+
+                    </div>
+
+                    <span
+                        id="todayRideLabel"
+                        class="summary-description"
+                    >
+                        corse programmate
+                    </span>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 CORSE DI OGGI
+                 ================================================= -->
+
+            <section
+                class="today-rides-section"
+                aria-labelledby="todayRidesTitle"
+            >
+
+                <div class="section-heading section-heading-row">
+
+                    <div>
+                        <span class="section-eyebrow">
+                            Programmazione
+                        </span>
+
+                        <h2 id="todayRidesTitle">
+                            Le corse di oggi
+                        </h2>
+                    </div>
 
                     <a
-                        href="aggiungi-prenotazione.html"
-                        class="btn btn-primary"
+                        href="prenotazioni.html"
+                        class="text-button"
                     >
-                        Aggiungi prenotazione
+                        Vedi tutte
                     </a>
 
                 </div>
 
-            </article>
 
-        </section>
-
-
-        <!--
-            Statistiche rapide
-        -->
-        <section class="home-stats">
-
-            <article class="stat-card">
-
-                <div class="stat-card-icon">
-                    🚘
-                </div>
-
-                <div class="stat-card-content">
-
-                    <span>
-                        CORSE DI OGGI
-                    </span>
-
-                    <strong id="today-rides-count">
-                        0
-                    </strong>
-
-                </div>
-
-            </article>
-
-
-            <article class="stat-card">
-
-                <div class="stat-card-icon">
-                    ✓
-                </div>
-
-                <div class="stat-card-content">
-
-                    <span>
-                        COMPLETATE
-                    </span>
-
-                    <strong id="today-completed-count">
-                        0
-                    </strong>
-
-                </div>
-
-            </article>
-
-        </section>
-
-
-        <!--
-            Elenco delle corse odierne
-        -->
-        <section class="today-rides-section">
-
-            <div class="section-heading">
-
-                <div>
-
-                    <span class="section-eyebrow">
-                        PROGRAMMA
-                    </span>
-
-                    <h2>
-                        Le tue corse di oggi
-                    </h2>
-
-                </div>
-
-
-                <a
-                    href="prenotazioni.html"
-                    class="section-link"
+                <div
+                    id="todayRidesList"
+                    class="rides-list"
                 >
-                    Vedi tutte
-                </a>
-
-            </div>
-
-
-            <!--
-                Lista generata dinamicamente da app.js
-            -->
-            <div
-                id="today-rides-list"
-                class="rides-list"
-            >
-                <!-- Le corse verranno inserite qui -->
-            </div>
-
-
-            <!--
-                Stato vuoto
-            -->
-            <div
-                id="today-rides-empty"
-                class="empty-state"
-                hidden
-            >
-
-                <div class="empty-state-icon">
-                    +
+                    <!-- Generato da JavaScript -->
                 </div>
 
-                <h3>
-                    Giornata libera
-                </h3>
 
-                <p>
-                    Non hai ancora inserito corse
-                    per oggi.
-                </p>
+                <!-- =================================================
+                     STATO VUOTO
+                     ================================================= -->
 
-                <a
-                    href="aggiungi-prenotazione.html"
-                    class="btn btn-primary"
+                <div
+                    id="todayRidesEmpty"
+                    class="empty-state"
+                    hidden
                 >
-                    Aggiungi corsa
-                </a>
 
-            </div>
+                    <div class="empty-state-icon">
+                        +
+                    </div>
 
-        </section>
+                    <h3>
+                        Nessuna corsa oggi
+                    </h3>
+
+                    <p>
+                        Le nuove prenotazioni
+                        compariranno qui.
+                    </p>
+
+                    <a
+                        href="aggiungi-prenotazione.html"
+                        class="primary-button"
+                    >
+                        Aggiungi una corsa
+                    </a>
+
+                </div>
+
+            </section>
+
+        </main>
 
 
-        <!--
-            Azione rapida per aggiungere una corsa
-        -->
-        <section class="quick-add-section">
+        <!-- =================================================
+             BOTTOM NAVIGATION
+             ================================================= -->
+
+        <nav
+            class="bottom-navigation"
+            aria-label="Navigazione principale"
+        >
 
             <a
-                href="aggiungi-prenotazione.html"
-                class="quick-add-card"
+                href="home.html"
+                class="bottom-nav-item active"
+                aria-current="page"
             >
 
-                <span class="quick-add-icon">
-                    +
+                <span
+                    class="bottom-nav-icon"
+                    aria-hidden="true"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linejoin="round"
+                        />
+                        <path
+                            d="M9 21V14H15V21"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
                 </span>
 
-                <span class="quick-add-content">
-
-                    <strong>
-                        Nuova prenotazione
-                    </strong>
-
-                    <small>
-                        Inserisci una nuova corsa
-                    </small>
-
-                </span>
-
-                <span class="quick-add-arrow">
-                    →
+                <span class="bottom-nav-label">
+                    Home
                 </span>
 
             </a>
 
-        </section>
 
-    </main>
+            <a
+                href="prenotazioni.html"
+                class="bottom-nav-item"
+            >
 
+                <span
+                    class="bottom-nav-icon"
+                    aria-hidden="true"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <rect
+                            x="4"
+                            y="5"
+                            width="16"
+                            height="16"
+                            rx="2"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        />
+                        <path
+                            d="M8 3V7M16 3V7M4 10H20"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                        />
+                    </svg>
+                </span>
 
-    <!--
-        Barra di navigazione inferiore.
-        Il pulsante centrale "+" è dedicato
-        all'inserimento di una nuova prenotazione.
-    -->
-    <nav
-        class="bottom-navigation"
-        aria-label="Navigazione principale"
-    >
+                <span class="bottom-nav-label">
+                    Prenotazioni
+                </span>
 
-        <a
-            href="home.html"
-            class="bottom-nav-item active"
-            aria-current="page"
-        >
-
-            <span class="bottom-nav-icon">
-                ⌂
-            </span>
-
-            <span class="bottom-nav-label">
-                Home
-            </span>
-
-        </a>
-
-
-        <a
-            href="prenotazioni.html"
-            class="bottom-nav-item"
-        >
-
-            <span class="bottom-nav-icon">
-                ☷
-            </span>
-
-            <span class="bottom-nav-label">
-                Prenotazioni
-            </span>
-
-        </a>
+            </a>
 
 
-        <a
-            href="aggiungi-prenotazione.html"
-            class="bottom-nav-add"
-            aria-label="Aggiungi prenotazione"
-        >
-            +
-        </a>
+            <a
+                href="aggiungi-prenotazione.html"
+                class="bottom-nav-add"
+                aria-label="Aggiungi prenotazione"
+            >
+
+                <span
+                    class="add-button"
+                    aria-hidden="true"
+                >
+                    +
+                </span>
+
+            </a>
 
 
-        <a
-            href="calendario.html"
-            class="bottom-nav-item"
-        >
+            <a
+                href="profilo.html"
+                class="bottom-nav-item"
+            >
 
-            <span class="bottom-nav-icon">
-                ▣
-            </span>
+                <span
+                    class="bottom-nav-icon"
+                    aria-hidden="true"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <circle
+                            cx="12"
+                            cy="8"
+                            r="3.5"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        />
+                        <path
+                            d="M5 21C5.7 16.9 8 15 12 15C16 15 18.3 16.9 19 21"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                        />
+                    </svg>
+                </span>
 
-            <span class="bottom-nav-label">
-                Calendario
-            </span>
+                <span class="bottom-nav-label">
+                    Profilo
+                </span>
 
-        </a>
+            </a>
 
+        </nav>
 
-        <a
-            href="profilo.html"
-            class="bottom-nav-item"
-        >
-
-            <span class="bottom-nav-icon">
-                ◉
-            </span>
-
-            <span class="bottom-nav-label">
-                Profilo
-            </span>
-
-        </a>
-
-    </nav>
+    </div>
 
 
-    <!--
-        Script condivisi
-    -->
-    <script
-        src="../js/storage.js"
-        defer
-    ></script>
+    <!-- =====================================================
+         SCRIPT
+         ===================================================== -->
 
-    <script
-        src="../js/utils.js"
-        defer
-    ></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/parser.js"></script>
+    <script src="../js/app.js"></script>
 
-    <script
-        src="../js/parser.js"
-        defer
-    ></script>
+    <script>
+        (function () {
+            "use strict";
 
-    <script
-        src="../js/app.js"
-        defer
-    ></script>
+            const Storage =
+                window.CTLStorage;
+
+            const Utils =
+                window.CTLUtils;
+
+
+            /*
+             * -------------------------------------------------
+             * ELEMENTI
+             * -------------------------------------------------
+             */
+
+            const greetingElement =
+                document.getElementById(
+                    "greeting"
+                );
+
+            const driverNameElement =
+                document.getElementById(
+                    "driverName"
+                );
+
+            const profileInitialElement =
+                document.getElementById(
+                    "profileInitial"
+                );
+
+            const nextRideCard =
+                document.getElementById(
+                    "nextRideCard"
+                );
+
+            const noNextRide =
+                document.getElementById(
+                    "noNextRide"
+                );
+
+            const nextRideDate =
+                document.getElementById(
+                    "nextRideDate"
+                );
+
+            const nextRideTime =
+                document.getElementById(
+                    "nextRideTime"
+                );
+
+            const nextRidePassengers =
+                document.getElementById(
+                    "nextRidePassengers"
+                );
+
+            const nextRideDeparture =
+                document.getElementById(
+                    "nextRideDeparture"
+                );
+
+            const nextRideArrival =
+                document.getElementById(
+                    "nextRideArrival"
+                );
+
+            const nextRideClient =
+                document.getElementById(
+                    "nextRideClient"
+                );
+
+            const nextRideClientName =
+                document.getElementById(
+                    "nextRideClientName"
+                );
+
+            const nextRideCallButton =
+                document.getElementById(
+                    "nextRideCallButton"
+                );
+
+            const nextRideNotes =
+                document.getElementById(
+                    "nextRideNotes"
+                );
+
+            const nextRideNotesText =
+                document.getElementById(
+                    "nextRideNotesText"
+                );
+
+            const todayRideCount =
+                document.getElementById(
+                    "todayRideCount"
+                );
+
+            const todayRideLabel =
+                document.getElementById(
+                    "todayRideLabel"
+                );
+
+            const todayRidesList =
+                document.getElementById(
+                    "todayRidesList"
+                );
+
+            const todayRidesEmpty =
+                document.getElementById(
+                    "todayRidesEmpty"
+                );
+
+
+            /*
+             * -------------------------------------------------
+             * ACCESSO
+             * -------------------------------------------------
+             */
+
+            if (
+                !Storage ||
+                typeof Storage.hasCompletedLogin !==
+                    "function" ||
+                !Storage.hasCompletedLogin()
+            ) {
+                window.location.replace(
+                    "login.html"
+                );
+
+                return;
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * PROFILO
+             * -------------------------------------------------
+             */
+
+            function renderProfile() {
+                const profile =
+                    Storage.getProfile();
+
+                const name =
+                    profile &&
+                    profile.driverName
+                        ? profile.driverName
+                        : "Autista";
+
+                driverNameElement.textContent =
+                    name;
+
+                profileInitialElement.textContent =
+                    getInitial(name);
+
+                if (
+                    Utils &&
+                    typeof Utils.getGreeting ===
+                        "function"
+                ) {
+                    greetingElement.textContent =
+                        Utils.getGreeting();
+                }
+            }
+
+
+            function getInitial(name) {
+                const value =
+                    String(name || "")
+                        .trim();
+
+                if (!value) {
+                    return "?";
+                }
+
+                return value
+                    .charAt(0)
+                    .toUpperCase();
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * HELPERS CORSE
+             * -------------------------------------------------
+             */
+
+            function getRideDate(ride) {
+                return (
+                    ride.date ||
+                    ride.data ||
+                    ""
+                );
+            }
+
+
+            function getRideTime(ride) {
+                return (
+                    ride.time ||
+                    ride.orario ||
+                    ""
+                );
+            }
+
+
+            function getDeparture(ride) {
+                return (
+                    ride.departure ||
+                    ride.partenza ||
+                    ""
+                );
+            }
+
+
+            function getArrival(ride) {
+                return (
+                    ride.arrival ||
+                    ride.arrivo ||
+                    ""
+                );
+            }
+
+
+            function getPhone(ride) {
+                return (
+                    ride.phone ||
+                    ride.telefono ||
+                    ""
+                );
+            }
+
+
+            function getClientName(ride) {
+                if (
+                    ride.clientName
+                ) {
+                    return ride.clientName;
+                }
+
+                if (
+                    ride.customerName
+                ) {
+                    return ride.customerName;
+                }
+
+                const first =
+                    ride.firstName ||
+                    ride.nome ||
+                    "";
+
+                const last =
+                    ride.lastName ||
+                    ride.cognome ||
+                    "";
+
+                return [
+                    first,
+                    last
+                ]
+                    .filter(Boolean)
+                    .join(" ");
+            }
+
+
+            function getPassengers(ride) {
+                return (
+                    ride.passengers ||
+                    ride.passeggeri ||
+                    ""
+                );
+            }
+
+
+            function getNotes(ride) {
+                return (
+                    ride.notes ||
+                    ride.note ||
+                    ""
+                );
+            }
+
+
+            function getRideId(ride) {
+                return (
+                    ride.id ||
+                    ""
+                );
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * RENDER PROSSIMA CORSA
+             * -------------------------------------------------
+             */
+
+            function renderNextRide(rides) {
+                if (
+                    !Array.isArray(rides) ||
+                    !rides.length
+                ) {
+                    nextRideCard.hidden =
+                        true;
+
+                    noNextRide.hidden =
+                        false;
+
+                    return;
+                }
+
+                let nextRide = null;
+
+                if (
+                    typeof Storage.getNextRide ===
+                        "function"
+                ) {
+                    nextRide =
+                        Storage.getNextRide();
+                }
+
+                if (!nextRide) {
+                    nextRide =
+                        rides.find(
+                            ride =>
+                                getRideDate(ride) ===
+                                Utils.getTodayDateString()
+                        );
+                }
+
+                if (!nextRide) {
+                    nextRideCard.hidden =
+                        true;
+
+                    noNextRide.hidden =
+                        false;
+
+                    return;
+                }
+
+                noNextRide.hidden =
+                    true;
+
+                nextRideCard.hidden =
+                    false;
+
+                const date =
+                    getRideDate(nextRide);
+
+                const time =
+                    getRideTime(nextRide);
+
+                nextRideDate.textContent =
+                    Utils.formatShortDate(
+                        date
+                    ) || "Oggi";
+
+                nextRideTime.textContent =
+                    Utils.formatTime(
+                        time
+                    );
+
+                nextRideDeparture.textContent =
+                    getDeparture(nextRide) ||
+                    "Partenza non indicata";
+
+                nextRideArrival.textContent =
+                    getArrival(nextRide) ||
+                    "Arrivo non indicato";
+
+
+                /*
+                 * Passeggeri
+                 */
+                const passengers =
+                    getPassengers(nextRide);
+
+                if (passengers) {
+                    nextRidePassengers.textContent =
+                        `${passengers} ${
+                            Number(passengers) === 1
+                                ? "passeggero"
+                                : "passeggeri"
+                        }`;
+                } else {
+                    nextRidePassengers.textContent =
+                        "Passeggeri n.d.";
+                }
+
+
+                /*
+                 * Cliente
+                 */
+                const clientName =
+                    getClientName(nextRide);
+
+                const phone =
+                    getPhone(nextRide);
+
+                if (
+                    clientName ||
+                    phone
+                ) {
+                    nextRideClient.hidden =
+                        false;
+
+                    nextRideClientName.textContent =
+                        clientName ||
+                        "Cliente";
+                } else {
+                    nextRideClient.hidden =
+                        true;
+                }
+
+
+                /*
+                 * Pulsante chiama
+                 *
+                 * Compare esclusivamente quando
+                 * esiste un numero di telefono.
+                 */
+                if (phone) {
+                    nextRideCallButton.hidden =
+                        false;
+
+                    nextRideCallButton.href =
+                        Utils.getTelLink(
+                            phone
+                        );
+
+                    nextRideCallButton.setAttribute(
+                        "aria-label",
+                        `Chiama ${clientName || "cliente"}`
+                    );
+                } else {
+                    nextRideCallButton.hidden =
+                        true;
+
+                    nextRideCallButton.removeAttribute(
+                        "href"
+                    );
+                }
+
+
+                /*
+                 * Note
+                 */
+                const notes =
+                    getNotes(nextRide);
+
+                if (notes) {
+                    nextRideNotes.hidden =
+                        false;
+
+                    nextRideNotesText.textContent =
+                        notes;
+                } else {
+                    nextRideNotes.hidden =
+                        true;
+
+                    nextRideNotesText.textContent =
+                        "";
+                }
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * RIEPILOGO
+             * -------------------------------------------------
+             */
+
+            function renderDailySummary(rides) {
+                const today =
+                    Utils.getTodayDateString();
+
+                const todayRides =
+                    rides.filter(
+                        ride =>
+                            getRideDate(ride) ===
+                            today
+                    );
+
+                const count =
+                    todayRides.length;
+
+                todayRideCount.textContent =
+                    count;
+
+                todayRideLabel.textContent =
+                    count === 1
+                        ? "corsa programmata"
+                        : "corse programmate";
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * LISTA CORSE
+             * -------------------------------------------------
+             */
+
+            function renderTodayRides(rides) {
+                const today =
+                    Utils.getTodayDateString();
+
+                const todayRides =
+                    rides
+                        .filter(
+                            ride =>
+                                getRideDate(ride) ===
+                                today
+                        )
+                        .sort(
+                            (a, b) =>
+                                Utils.compareTimes(
+                                    getRideTime(a),
+                                    getRideTime(b)
+                                )
+                        );
+
+                todayRidesList.innerHTML =
+                    "";
+
+                if (!todayRides.length) {
+                    todayRidesEmpty.hidden =
+                        false;
+
+                    return;
+                }
+
+                todayRidesEmpty.hidden =
+                    true;
+
+
+                todayRides.forEach(
+                    ride => {
+                        todayRidesList.appendChild(
+                            createRideElement(
+                                ride
+                            )
+                        );
+                    }
+                );
+            }
+
+
+            function createRideElement(ride) {
+                const element =
+                    document.createElement(
+                        "article"
+                    );
+
+                element.className =
+                    "ride-list-item";
+
+                element.dataset.rideId =
+                    getRideId(ride);
+
+
+                const time =
+                    document.createElement(
+                        "div"
+                    );
+
+                time.className =
+                    "ride-list-time";
+
+                time.textContent =
+                    Utils.formatTime(
+                        getRideTime(ride)
+                    );
+
+
+                const route =
+                    document.createElement(
+                        "div"
+                    );
+
+                route.className =
+                    "ride-list-route";
+
+
+                const departure =
+                    document.createElement(
+                        "strong"
+                    );
+
+                departure.className =
+                    "ride-list-departure";
+
+                departure.textContent =
+                    getDeparture(ride) ||
+                    "Partenza non indicata";
+
+
+                const arrow =
+                    document.createElement(
+                        "span"
+                    );
+
+                arrow.className =
+                    "ride-list-arrow";
+
+                arrow.textContent =
+                    "→";
+
+
+                const arrival =
+                    document.createElement(
+                        "span"
+                    );
+
+                arrival.className =
+                    "ride-list-arrival";
+
+                arrival.textContent =
+                    getArrival(ride) ||
+                    "Arrivo non indicato";
+
+
+                route.appendChild(
+                    departure
+                );
+
+                route.appendChild(
+                    arrow
+                );
+
+                route.appendChild(
+                    arrival
+                );
+
+
+                const meta =
+                    document.createElement(
+                        "div"
+                    );
+
+                meta.className =
+                    "ride-list-meta";
+
+
+                const clientName =
+                    getClientName(ride);
+
+                const passengers =
+                    getPassengers(ride);
+
+                if (clientName) {
+                    const client =
+                        document.createElement(
+                            "span"
+                        );
+
+                    client.textContent =
+                        clientName;
+
+                    meta.appendChild(
+                        client
+                    );
+                }
+
+                if (passengers) {
+                    const passenger =
+                        document.createElement(
+                            "span"
+                        );
+
+                    passenger.textContent =
+                        `${passengers} ${
+                            Number(passengers) === 1
+                                ? "pax"
+                                : "pax"
+                        }`;
+
+                    meta.appendChild(
+                        passenger
+                    );
+                }
+
+
+                const content =
+                    document.createElement(
+                        "div"
+                    );
+
+                content.className =
+                    "ride-list-content";
+
+                content.appendChild(
+                    route
+                );
+
+                if (
+                    meta.childElementCount
+                ) {
+                    content.appendChild(
+                        meta
+                    );
+                }
+
+
+                element.appendChild(
+                    time
+                );
+
+                element.appendChild(
+                    content
+                );
+
+
+                /*
+                 * Cliccando sulla corsa si apre
+                 * la pagina delle prenotazioni.
+                 */
+                element.addEventListener(
+                    "click",
+                    function () {
+                        window.location.href =
+                            "prenotazioni.html";
+                    }
+                );
+
+                element.setAttribute(
+                    "role",
+                    "button"
+                );
+
+                element.setAttribute(
+                    "tabindex",
+                    "0"
+                );
+
+                element.addEventListener(
+                    "keydown",
+                    function (event) {
+                        if (
+                            event.key ===
+                                "Enter" ||
+                            event.key ===
+                                " "
+                        ) {
+                            event.preventDefault();
+
+                            window.location.href =
+                                "prenotazioni.html";
+                        }
+                    }
+                );
+
+                return element;
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * RENDER COMPLETO
+             * -------------------------------------------------
+             */
+
+            function renderHome() {
+                const rides =
+                    Storage.getRides();
+
+                renderProfile();
+
+                renderDailySummary(
+                    rides
+                );
+
+                renderNextRide(
+                    rides
+                );
+
+                renderTodayRides(
+                    rides
+                );
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * AGGIORNAMENTO AUTOMATICO
+             * -------------------------------------------------
+             */
+
+            renderHome();
+
+
+            /*
+             * Se l'app viene riaperta o torna
+             * in primo piano, aggiorniamo i dati.
+             */
+            window.addEventListener(
+                "pageshow",
+                renderHome
+            );
+
+            window.addEventListener(
+                "focus",
+                renderHome
+            );
+
+
+            /*
+             * Se un'altra pagina modifica
+             * localStorage, aggiorniamo la Home.
+             */
+            window.addEventListener(
+                "storage",
+                function () {
+                    renderHome();
+                }
+            );
+
+        })();
+    </script>
 
 </body>
-
 </html>
