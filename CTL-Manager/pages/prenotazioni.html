@@ -1,489 +1,1203 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
     <meta
         name="theme-color"
-        content="#102A43"
+        content="#f5f1eb"
     >
 
-    <meta
-        name="description"
-        content="CTL Manager - Prenotazioni"
-    >
-
-    <title>Prenotazioni - CTL Manager</title>
+    <title>CTL Manager — Prenotazioni</title>
 
     <link
         rel="stylesheet"
         href="../css/style.css"
     >
-
 </head>
 
+<body class="app-body bookings-page">
 
-<body class="app-page">
+    <div class="app-shell">
 
-    <!--
-        Header
-    -->
-    <header class="app-header">
+        <!-- HEADER -->
+        <header class="app-header">
 
-        <div class="app-header-content">
+            <div class="header-content">
 
-            <div class="app-brand">
+                <div class="header-copy">
 
-                <div class="app-brand-logo">
-                    CTL
+                    <span class="header-greeting">
+                        Gestione
+                    </span>
+
+                    <h1 class="header-title">
+                        Prenotazioni
+                    </h1>
+
                 </div>
 
-                <div class="app-brand-text">
-                    CTL Manager
-                </div>
+                <a
+                    href="profilo.html"
+                    class="profile-button"
+                    aria-label="Apri profilo"
+                >
+                    <span
+                        id="profileInitial"
+                        class="profile-initial"
+                    >
+                        ?
+                    </span>
+                </a>
 
             </div>
+
+        </header>
+
+
+        <!-- CONTENUTO -->
+        <main class="page-content">
+
+            <!-- AZIONI -->
+            <section class="booking-actions">
+
+                <a
+                    href="calendario.html"
+                    class="secondary-button calendar-button"
+                >
+                    <span aria-hidden="true">
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                        >
+                            <rect
+                                x="4"
+                                y="5"
+                                width="16"
+                                height="16"
+                                rx="2"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            />
+
+                            <path
+                                d="M8 3V7M16 3V7M4 10H20"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            />
+                        </svg>
+                    </span>
+
+                    Calendario
+                </a>
+
+                <a
+                    href="aggiungi-prenotazione.html"
+                    class="primary-button"
+                >
+                    <span aria-hidden="true">
+                        +
+                    </span>
+
+                    Nuova corsa
+                </a>
+
+            </section>
+
+
+            <!-- FILTRI -->
+            <section
+                class="booking-filters"
+                aria-label="Filtri prenotazioni"
+            >
+
+                <div class="filter-row">
+
+                    <button
+                        type="button"
+                        class="filter-button active"
+                        data-filter="all"
+                    >
+                        Tutte
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-filter="today"
+                    >
+                        Oggi
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-filter="future"
+                    >
+                        Future
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- CONTATORE -->
+            <section class="booking-summary">
+
+                <div>
+                    <span class="section-eyebrow">
+                        Programmazione
+                    </span>
+
+                    <h2 id="bookingCount">
+                        0 prenotazioni
+                    </h2>
+                </div>
+
+            </section>
+
+
+            <!-- LISTA -->
+            <section
+                id="bookingsContainer"
+                class="bookings-container"
+                aria-live="polite"
+            >
+                <!-- Generato da JavaScript -->
+            </section>
+
+
+            <!-- STATO VUOTO -->
+            <section
+                id="emptyBookings"
+                class="empty-state"
+                hidden
+            >
+
+                <div class="empty-state-icon">
+                    +
+                </div>
+
+                <h3>
+                    Nessuna prenotazione
+                </h3>
+
+                <p>
+                    Non ci sono corse corrispondenti
+                    al filtro selezionato.
+                </p>
+
+                <a
+                    href="aggiungi-prenotazione.html"
+                    class="primary-button"
+                >
+                    Aggiungi una corsa
+                </a>
+
+            </section>
+
+        </main>
+
+
+        <!-- BOTTOM NAV -->
+        <nav
+            class="bottom-navigation"
+            aria-label="Navigazione principale"
+        >
+
+            <a
+                href="home.html"
+                class="bottom-nav-item"
+            >
+
+                <span
+                    class="bottom-nav-icon"
+                    aria-hidden="true"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linejoin="round"
+                        />
+
+                        <path
+                            d="M9 21V14H15V21"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linejoin="round"
+                        />
+                    </svg>
+                </span>
+
+                <span class="bottom-nav-label">
+                    Home
+                </span>
+
+            </a>
+
+
+            <a
+                href="prenotazioni.html"
+                class="bottom-nav-item active"
+                aria-current="page"
+            >
+
+                <span
+                    class="bottom-nav-icon"
+                    aria-hidden="true"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <rect
+                            x="4"
+                            y="5"
+                            width="16"
+                            height="16"
+                            rx="2"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        />
+
+                        <path
+                            d="M8 3V7M16 3V7M4 10H20"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                        />
+                    </svg>
+                </span>
+
+                <span class="bottom-nav-label">
+                    Prenotazioni
+                </span>
+
+            </a>
+
+
+            <a
+                href="aggiungi-prenotazione.html"
+                class="bottom-nav-add"
+                aria-label="Aggiungi prenotazione"
+            >
+
+                <span
+                    class="add-button"
+                    aria-hidden="true"
+                >
+                    +
+                </span>
+
+            </a>
 
 
             <a
                 href="profilo.html"
-                class="header-profile-button"
-                aria-label="Apri profilo"
+                class="bottom-nav-item"
             >
 
                 <span
-                    id="header-driver-initial"
-                    class="header-profile-initial"
-                >
-                    -
-                </span>
-
-            </a>
-
-        </div>
-
-    </header>
-
-
-    <!--
-        Contenuto principale
-    -->
-    <main class="app-main">
-
-        <!--
-            Titolo pagina
-        -->
-        <section class="page-heading">
-
-            <div>
-
-                <span class="section-eyebrow">
-                    GESTIONE CORSE
-                </span>
-
-                <h1>
-                    Prenotazioni
-                </h1>
-
-                <p>
-                    Visualizza e gestisci tutte le tue corse programmate.
-                </p>
-
-            </div>
-
-
-            <a
-                href="calendario.html"
-                class="btn btn-secondary"
-            >
-                <span>
-                    ▣
-                </span>
-
-                Calendario
-            </a>
-
-        </section>
-
-
-        <!--
-            Barra di ricerca
-        -->
-        <section class="booking-search-section">
-
-            <div class="search-box">
-
-                <span
-                    class="search-icon"
+                    class="bottom-nav-icon"
                     aria-hidden="true"
                 >
-                    ⌕
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <circle
+                            cx="12"
+                            cy="8"
+                            r="3.5"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                        />
+
+                        <path
+                            d="M5 21C5.7 16.9 8 15 12 15C16 15 18.3 16.9 19 21"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                        />
+                    </svg>
                 </span>
 
-                <input
-                    type="search"
-                    id="booking-search"
-                    placeholder="Cerca cliente, indirizzo o destinazione..."
-                    autocomplete="off"
-                    aria-label="Cerca prenotazione"
-                >
-
-                <button
-                    type="button"
-                    id="clear-booking-search"
-                    class="search-clear"
-                    aria-label="Cancella ricerca"
-                    hidden
-                >
-                    ×
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!--
-            Filtri
-        -->
-        <section class="booking-filters">
-
-            <div class="filter-group">
-
-                <label
-                    for="booking-date-filter"
-                >
-                    Data
-                </label>
-
-                <select
-                    id="booking-date-filter"
-                >
-
-                    <option value="all">
-                        Tutte le date
-                    </option>
-
-                    <option value="today">
-                        Oggi
-                    </option>
-
-                    <option value="tomorrow">
-                        Domani
-                    </option>
-
-                    <option value="week">
-                        Questa settimana
-                    </option>
-
-                    <option value="future">
-                        Prossime corse
-                    </option>
-
-                    <option value="past">
-                        Corse passate
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="filter-group">
-
-                <label
-                    for="booking-status-filter"
-                >
-                    Stato
-                </label>
-
-                <select
-                    id="booking-status-filter"
-                >
-
-                    <option value="all">
-                        Tutti gli stati
-                    </option>
-
-                    <option value="scheduled">
-                        Programmate
-                    </option>
-
-                    <option value="completed">
-                        Completate
-                    </option>
-
-                    <option value="cancelled">
-                        Annullate
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <button
-                type="button"
-                id="reset-booking-filters"
-                class="btn btn-filter-reset"
-            >
-                Reimposta
-            </button>
-
-        </section>
-
-
-        <!--
-            Riepilogo risultati
-        -->
-        <section class="booking-summary">
-
-            <div class="booking-summary-count">
-
-                <strong id="booking-results-count">
-                    0
-                </strong>
-
-                <span>
-                    prenotazioni
+                <span class="bottom-nav-label">
+                    Profilo
                 </span>
 
-            </div>
-
-
-            <div
-                id="booking-active-filter-label"
-                class="booking-active-filter"
-                hidden
-            >
-                Filtri attivi
-            </div>
-
-        </section>
-
-
-        <!--
-            Lista completa delle prenotazioni.
-            JavaScript creerà dinamicamente i gruppi
-            per giorno.
-        -->
-        <section
-            id="bookings-container"
-            class="bookings-container"
-        >
-
-            <!--
-                Esempio della struttura che verrà generata:
-
-                <div class="booking-day-group">
-                    <div class="booking-day-header">
-                        ...
-                    </div>
-
-                    <div class="bookings-day-list">
-                        ...
-                    </div>
-                </div>
-            -->
-
-        </section>
-
-
-        <!--
-            Stato vuoto generale
-        -->
-        <section
-            id="bookings-empty"
-            class="empty-state page-empty-state"
-            hidden
-        >
-
-            <div class="empty-state-icon">
-                ☷
-            </div>
-
-            <h2>
-                Nessuna prenotazione
-            </h2>
-
-            <p>
-                Non ci sono prenotazioni che corrispondono
-                ai criteri selezionati.
-            </p>
-
-            <a
-                href="aggiungi-prenotazione.html"
-                class="btn btn-primary"
-            >
-                Aggiungi prenotazione
             </a>
 
-        </section>
+        </nav>
+
+    </div>
 
 
-        <!--
-            Stato mostrato quando la ricerca non
-            restituisce risultati.
-        -->
-        <section
-            id="bookings-search-empty"
-            class="empty-state page-empty-state"
-            hidden
-        >
+    <!-- SCRIPT -->
+    <script src="../js/storage.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/parser.js"></script>
+    <script src="../js/app.js"></script>
 
-            <div class="empty-state-icon">
-                ⌕
-            </div>
+    <script>
+        (function () {
 
-            <h2>
-                Nessun risultato
-            </h2>
-
-            <p>
-                Non abbiamo trovato prenotazioni
-                corrispondenti alla tua ricerca.
-            </p>
-
-            <button
-                type="button"
-                id="clear-search-empty"
-                class="btn btn-secondary"
-            >
-                Cancella ricerca
-            </button>
-
-        </section>
+            "use strict";
 
 
-        <!--
-            Pulsante flottante per aggiungere
-            rapidamente una prenotazione.
-        -->
-        <a
-            href="aggiungi-prenotazione.html"
-            class="floating-add-button"
-            aria-label="Aggiungi prenotazione"
-        >
-            +
-        </a>
+            const Storage =
+                window.CTLStorage;
 
-    </main>
+            const Utils =
+                window.CTLUtils;
 
 
-    <!--
-        Navigazione inferiore
-    -->
-    <nav
-        class="bottom-navigation"
-        aria-label="Navigazione principale"
-    >
+            const container =
+                document.getElementById(
+                    "bookingsContainer"
+                );
 
-        <a
-            href="home.html"
-            class="bottom-nav-item"
-        >
+            const emptyState =
+                document.getElementById(
+                    "emptyBookings"
+                );
 
-            <span class="bottom-nav-icon">
-                ⌂
-            </span>
+            const bookingCount =
+                document.getElementById(
+                    "bookingCount"
+                );
 
-            <span class="bottom-nav-label">
-                Home
-            </span>
+            const profileInitial =
+                document.getElementById(
+                    "profileInitial"
+                );
 
-        </a>
-
-
-        <a
-            href="prenotazioni.html"
-            class="bottom-nav-item active"
-            aria-current="page"
-        >
-
-            <span class="bottom-nav-icon">
-                ☷
-            </span>
-
-            <span class="bottom-nav-label">
-                Prenotazioni
-            </span>
-
-        </a>
+            const filterButtons =
+                Array.from(
+                    document.querySelectorAll(
+                        ".filter-button"
+                    )
+                );
 
 
-        <a
-            href="aggiungi-prenotazione.html"
-            class="bottom-nav-add"
-            aria-label="Aggiungi prenotazione"
-        >
-            +
-        </a>
+            let currentFilter =
+                "all";
 
 
-        <a
-            href="calendario.html"
-            class="bottom-nav-item"
-        >
+            /*
+             * -------------------------------------------------
+             * ACCESSO
+             * -------------------------------------------------
+             */
 
-            <span class="bottom-nav-icon">
-                ▣
-            </span>
+            if (
+                !Storage ||
+                !Storage.hasCompletedLogin()
+            ) {
+                window.location.replace(
+                    "login.html"
+                );
 
-            <span class="bottom-nav-label">
-                Calendario
-            </span>
-
-        </a>
-
-
-        <a
-            href="profilo.html"
-            class="bottom-nav-item"
-        >
-
-            <span class="bottom-nav-icon">
-                ◉
-            </span>
-
-            <span class="bottom-nav-label">
-                Profilo
-            </span>
-
-        </a>
-
-    </nav>
+                return;
+            }
 
 
-    <!--
-        Script condivisi
-    -->
-    <script
-        src="../js/storage.js"
-        defer
-    ></script>
+            /*
+             * -------------------------------------------------
+             * PROFILO
+             * -------------------------------------------------
+             */
 
-    <script
-        src="../js/utils.js"
-        defer
-    ></script>
+            function renderProfile() {
 
-    <script
-        src="../js/parser.js"
-        defer
-    ></script>
+                const profile =
+                    Storage.getProfile();
 
-    <script
-        src="../js/app.js"
-        defer
-    ></script>
+                const name =
+                    profile &&
+                    profile.driverName
+                        ? profile.driverName
+                        : "";
+
+                profileInitial.textContent =
+                    name
+                        ? name.charAt(0).toUpperCase()
+                        : "?";
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * HELPERS
+             * -------------------------------------------------
+             */
+
+            function getDate(ride) {
+                return (
+                    ride.date ||
+                    ride.data ||
+                    ""
+                );
+            }
+
+
+            function getTime(ride) {
+                return (
+                    ride.time ||
+                    ride.orario ||
+                    ""
+                );
+            }
+
+
+            function getDeparture(ride) {
+                return (
+                    ride.departure ||
+                    ride.partenza ||
+                    ""
+                );
+            }
+
+
+            function getArrival(ride) {
+                return (
+                    ride.arrival ||
+                    ride.arrivo ||
+                    ""
+                );
+            }
+
+
+            function getPhone(ride) {
+                return (
+                    ride.phone ||
+                    ride.telefono ||
+                    ""
+                );
+            }
+
+
+            function getClientName(ride) {
+
+                if (ride.clientName) {
+                    return ride.clientName;
+                }
+
+                if (ride.customerName) {
+                    return ride.customerName;
+                }
+
+                return [
+                    ride.firstName ||
+                        ride.nome ||
+                        "",
+                    ride.lastName ||
+                        ride.cognome ||
+                        ""
+                ]
+                    .filter(Boolean)
+                    .join(" ");
+            }
+
+
+            function getPassengers(ride) {
+                return (
+                    ride.passengers ||
+                    ride.passeggeri ||
+                    ""
+                );
+            }
+
+
+            function getNotes(ride) {
+                return (
+                    ride.notes ||
+                    ride.note ||
+                    ""
+                );
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * FILTRI
+             * -------------------------------------------------
+             */
+
+            function filterRides(rides) {
+
+                const today =
+                    Utils.getTodayDateString();
+
+                if (
+                    currentFilter ===
+                    "today"
+                ) {
+                    return rides.filter(
+                        ride =>
+                            getDate(ride) ===
+                            today
+                    );
+                }
+
+
+                if (
+                    currentFilter ===
+                    "future"
+                ) {
+                    return rides.filter(
+                        ride =>
+                            getDate(ride) >=
+                            today
+                    );
+                }
+
+
+                return rides;
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * ORDINAMENTO
+             * -------------------------------------------------
+             */
+
+            function sortRides(rides) {
+
+                return [...rides].sort(
+                    (a, b) => {
+
+                        const dateA =
+                            getDate(a);
+
+                        const dateB =
+                            getDate(b);
+
+                        if (
+                            dateA !==
+                            dateB
+                        ) {
+                            return dateA.localeCompare(
+                                dateB
+                            );
+                        }
+
+                        return Utils.compareTimes(
+                            getTime(a),
+                            getTime(b)
+                        );
+                    }
+                );
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * RAGGRUPPAMENTO
+             * -------------------------------------------------
+             */
+
+            function groupByDate(rides) {
+
+                const groups =
+                    new Map();
+
+                rides.forEach(
+                    ride => {
+
+                        const date =
+                            getDate(ride);
+
+                        if (!groups.has(date)) {
+                            groups.set(
+                                date,
+                                []
+                            );
+                        }
+
+                        groups
+                            .get(date)
+                            .push(ride);
+                    }
+                );
+
+                return groups;
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * TITOLO DATA
+             * -------------------------------------------------
+             */
+
+            function getDateTitle(date) {
+
+                const today =
+                    Utils.getTodayDateString();
+
+                if (
+                    date === today
+                ) {
+                    return "Oggi";
+                }
+
+
+                const tomorrow =
+                    new Date();
+
+                tomorrow.setDate(
+                    tomorrow.getDate() + 1
+                );
+
+                const tomorrowKey =
+                    [
+                        tomorrow.getFullYear(),
+                        String(
+                            tomorrow.getMonth() + 1
+                        ).padStart(2, "0"),
+                        String(
+                            tomorrow.getDate()
+                        ).padStart(2, "0")
+                    ].join("-");
+
+
+                if (
+                    date === tomorrowKey
+                ) {
+                    return "Domani";
+                }
+
+
+                return Utils.formatLongDate(
+                    date
+                );
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * ELEMENTO CORSA
+             * -------------------------------------------------
+             */
+
+            function createRideElement(ride) {
+
+                const article =
+                    document.createElement(
+                        "article"
+                    );
+
+                article.className =
+                    "booking-item";
+
+
+                /*
+                 * Orario
+                 */
+
+                const time =
+                    document.createElement(
+                        "div"
+                    );
+
+                time.className =
+                    "booking-time";
+
+                time.textContent =
+                    Utils.formatTime(
+                        getTime(ride)
+                    );
+
+
+                /*
+                 * Contenuto
+                 */
+
+                const content =
+                    document.createElement(
+                        "div"
+                    );
+
+                content.className =
+                    "booking-content";
+
+
+                /*
+                 * Cliente
+                 */
+
+                const clientName =
+                    getClientName(ride);
+
+                if (clientName) {
+
+                    const client =
+                        document.createElement(
+                            "div"
+                        );
+
+                    client.className =
+                        "booking-client";
+
+                    client.textContent =
+                        clientName;
+
+                    content.appendChild(
+                        client
+                    );
+                }
+
+
+                /*
+                 * Percorso
+                 */
+
+                const route =
+                    document.createElement(
+                        "div"
+                    );
+
+                route.className =
+                    "booking-route";
+
+
+                const departure =
+                    document.createElement(
+                        "span"
+                    );
+
+                departure.className =
+                    "booking-departure";
+
+                departure.textContent =
+                    getDeparture(ride) ||
+                    "Partenza non indicata";
+
+
+                const arrow =
+                    document.createElement(
+                        "span"
+                    );
+
+                arrow.className =
+                    "booking-arrow";
+
+                arrow.textContent =
+                    "→";
+
+
+                const arrival =
+                    document.createElement(
+                        "span"
+                    );
+
+                arrival.className =
+                    "booking-arrival";
+
+                arrival.textContent =
+                    getArrival(ride) ||
+                    "Arrivo non indicato";
+
+
+                route.appendChild(
+                    departure
+                );
+
+                route.appendChild(
+                    arrow
+                );
+
+                route.appendChild(
+                    arrival
+                );
+
+                content.appendChild(
+                    route
+                );
+
+
+                /*
+                 * Meta informazioni
+                 */
+
+                const meta =
+                    document.createElement(
+                        "div"
+                    );
+
+                meta.className =
+                    "booking-meta";
+
+
+                const passengers =
+                    getPassengers(ride);
+
+                if (passengers) {
+
+                    const passenger =
+                        document.createElement(
+                            "span"
+                        );
+
+                    passenger.textContent =
+                        `${passengers} ${
+                            Number(passengers) === 1
+                                ? "passeggero"
+                                : "passeggeri"
+                        }`;
+
+                    meta.appendChild(
+                        passenger
+                    );
+                }
+
+
+                if (getPhone(ride)) {
+
+                    const phone =
+                        document.createElement(
+                            "a"
+                        );
+
+                    phone.className =
+                        "booking-call";
+
+                    phone.href =
+                        Utils.getTelLink(
+                            getPhone(ride)
+                        );
+
+                    phone.textContent =
+                        "Chiama";
+
+                    phone.addEventListener(
+                        "click",
+                        event => {
+                            event.stopPropagation();
+                        }
+                    );
+
+                    meta.appendChild(
+                        phone
+                    );
+                }
+
+
+                if (
+                    meta.childElementCount
+                ) {
+                    content.appendChild(
+                        meta
+                    );
+                }
+
+
+                /*
+                 * Note
+                 */
+
+                const notes =
+                    getNotes(ride);
+
+                if (notes) {
+
+                    const note =
+                        document.createElement(
+                            "div"
+                        );
+
+                    note.className =
+                        "booking-note";
+
+                    note.textContent =
+                        notes;
+
+                    content.appendChild(
+                        note
+                    );
+                }
+
+
+                article.appendChild(
+                    time
+                );
+
+                article.appendChild(
+                    content
+                );
+
+
+                /*
+                 * Apertura dettaglio.
+                 *
+                 * Se app.js gestisce il dettaglio
+                 * utilizziamo l'evento globale.
+                 */
+
+                article.dataset.rideId =
+                    ride.id || "";
+
+
+                article.addEventListener(
+                    "click",
+                    function () {
+
+                        const id =
+                            ride.id;
+
+                        if (!id) {
+                            return;
+                        }
+
+                        const params =
+                            new URLSearchParams();
+
+                        params.set(
+                            "id",
+                            id
+                        );
+
+                        /*
+                         * La pagina resta la stessa:
+                         * app.js può intercettare il
+                         * parametro per il dettaglio.
+                         */
+                        window.location.href =
+                            `prenotazioni.html?${params.toString()}`;
+                    }
+                );
+
+
+                return article;
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * RENDER
+             * -------------------------------------------------
+             */
+
+            function render() {
+
+                let rides =
+                    Storage.getRides();
+
+                rides =
+                    filterRides(rides);
+
+                rides =
+                    sortRides(rides);
+
+
+                container.innerHTML =
+                    "";
+
+                emptyState.hidden =
+                    rides.length > 0;
+
+
+                bookingCount.textContent =
+                    `${rides.length} ${
+                        rides.length === 1
+                            ? "prenotazione"
+                            : "prenotazioni"
+                    }`;
+
+
+                if (!rides.length) {
+                    return;
+                }
+
+
+                const groups =
+                    groupByDate(rides);
+
+
+                groups.forEach(
+                    (dateRides, date) => {
+
+                        const group =
+                            document.createElement(
+                                "section"
+                            );
+
+                        group.className =
+                            "booking-day-group";
+
+
+                        const heading =
+                            document.createElement(
+                                "div"
+                            );
+
+                        heading.className =
+                            "booking-day-heading";
+
+
+                        const title =
+                            document.createElement(
+                                "h3"
+                            );
+
+                        title.textContent =
+                            getDateTitle(
+                                date
+                            );
+
+
+                        const count =
+                            document.createElement(
+                                "span"
+                            );
+
+                        count.className =
+                            "booking-day-count";
+
+                        count.textContent =
+                            `${dateRides.length} ${
+                                dateRides.length === 1
+                                    ? "corsa"
+                                    : "corse"
+                            }`;
+
+
+                        heading.appendChild(
+                            title
+                        );
+
+                        heading.appendChild(
+                            count
+                        );
+
+
+                        const list =
+                            document.createElement(
+                                "div"
+                            );
+
+                        list.className =
+                            "booking-day-list";
+
+
+                        dateRides.forEach(
+                            ride => {
+
+                                list.appendChild(
+                                    createRideElement(
+                                        ride
+                                    )
+                                );
+                            }
+                        );
+
+
+                        group.appendChild(
+                            heading
+                        );
+
+                        group.appendChild(
+                            list
+                        );
+
+                        container.appendChild(
+                            group
+                        );
+                    }
+                );
+            }
+
+
+            /*
+             * -------------------------------------------------
+             * FILTRI
+             * -------------------------------------------------
+             */
+
+            filterButtons.forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        function () {
+
+                            filterButtons.forEach(
+                                item =>
+                                    item.classList.remove(
+                                        "active"
+                                    )
+                            );
+
+                            button.classList.add(
+                                "active"
+                            );
+
+                            currentFilter =
+                                button.dataset.filter ||
+                                "all";
+
+                            render();
+                        }
+                    );
+                }
+            );
+
+
+            /*
+             * -------------------------------------------------
+             * AVVIO
+             * -------------------------------------------------
+             */
+
+            renderProfile();
+            render();
+
+
+            /*
+             * Aggiorna quando torniamo
+             * alla pagina.
+             */
+
+            window.addEventListener(
+                "pageshow",
+                function () {
+                    renderProfile();
+                    render();
+                }
+            );
+
+
+            window.addEventListener(
+                "focus",
+                render
+            );
+
+
+            window.addEventListener(
+                "storage",
+                render
+            );
+
+        })();
+    </script>
 
 </body>
-
 </html>
