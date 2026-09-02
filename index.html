@@ -5,17 +5,17 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
     <meta
         name="theme-color"
-        content="#102A43"
+        content="#f5f1ea"
     >
 
     <meta
         name="description"
-        content="CTL Manager - Gestione professionale delle corse NCC"
+        content="CTL Manager - Gestione professionale delle prenotazioni della Cooperativa Taxi Lecce."
     >
 
     <title>CTL Manager</title>
@@ -24,83 +24,99 @@
         rel="stylesheet"
         href="css/style.css"
     >
+
+    <link
+        rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23e8a15d'/%3E%3Ctext x='50' y='66' text-anchor='middle' font-size='48' font-family='Arial' font-weight='700' fill='white'%3ECTL%3C/text%3E%3C/svg%3E"
+    >
 </head>
 
 <body>
 
-    <!--
-        Schermata iniziale mostrata mentre
-        JavaScript controlla lo stato dell'app.
-    -->
-    <div
-        id="app-loader"
+    <main
+        id="app"
         class="app-loader"
+        aria-label="CTL Manager"
     >
-        <div class="loader-logo">
-            CTL
+        <div class="loader-content">
+
+            <div class="loader-logo">
+                CTL
+            </div>
+
+            <h1>
+                CTL Manager
+            </h1>
+
+            <p>
+                Gestione corse e prenotazioni
+            </p>
+
+            <div
+                class="loader-spinner"
+                aria-hidden="true"
+            ></div>
+
         </div>
+    </main>
 
-        <div class="loader-text">
-            CTL Manager
-        </div>
+    <script>
+        (function () {
+            "use strict";
 
-        <div class="loader-spinner"></div>
-    </div>
+            const STORAGE_KEY = "ctl_manager_profile";
 
+            function getSavedProfile() {
+                try {
+                    const savedData = localStorage.getItem(STORAGE_KEY);
 
-    <!--
-        Contenitore principale dell'app.
-        Le singole pagine verranno caricate
-        all'interno di questo elemento.
-    -->
-    <main id="app"></main>
+                    if (!savedData) {
+                        return null;
+                    }
 
+                    const profile = JSON.parse(savedData);
 
-    <!--
-        Messaggi temporanei / notifiche.
-    -->
-    <div
-        id="toast-container"
-        class="toast-container"
-        aria-live="polite"
-    ></div>
+                    if (
+                        !profile ||
+                        typeof profile !== "object" ||
+                        typeof profile.driverName !== "string" ||
+                        !profile.driverName.trim()
+                    ) {
+                        return null;
+                    }
 
+                    return profile;
+                } catch (error) {
+                    console.error(
+                        "Errore durante il caricamento del profilo:",
+                        error
+                    );
 
-    <!--
-        Modale globale utilizzato per:
-        - conferme
-        - avvisi
-        - blacklist
-        - operazioni importanti
-    -->
-    <div
-        id="modal-container"
-        class="modal-container"
-    ></div>
+                    return null;
+                }
+            }
 
+            function redirect() {
+                const profile = getSavedProfile();
 
-    <!--
-        JavaScript principale.
-    -->
-    <script
-        src="js/storage.js"
-        defer
-    ></script>
+                if (profile) {
+                    window.location.replace("pages/home.html");
+                    return;
+                }
 
-    <script
-        src="js/utils.js"
-        defer
-    ></script>
+                window.location.replace("pages/login.html");
+            }
 
-    <script
-        src="js/parser.js"
-        defer
-    ></script>
-
-    <script
-        src="js/app.js"
-        defer
-    ></script>
+            /*
+             * Piccolo ritardo per evitare un passaggio visivo troppo brusco
+             * durante il caricamento iniziale dell'app.
+             */
+            window.setTimeout(
+                redirect,
+                250
+            );
+        })();
+    </script>
 
 </body>
 </html>
