@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#102A43"
+    >
+
+    <meta
+        name="description"
+        content="CTL Manager - Aggiungi prenotazione"
+    >
+
+    <title>Nuova prenotazione - CTL Manager</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
+
+</head>
+
+
+<body class="app-page">
+
+    <!--
+        Header
+    -->
+    <header class="app-header">
+
+        <div class="app-header-content">
+
+            <a
+                href="home.html"
+                class="app-header-back"
+                aria-label="Torna alla Home"
+            >
+                ‹
+            </a>
+
+
+            <div class="app-brand">
+
+                <div class="app-brand-logo">
+                    CTL
+                </div>
+
+                <div class="app-brand-text">
+                    CTL Manager
+                </div>
+
+            </div>
+
+
+            <div class="app-header-spacer"></div>
+
+        </div>
+
+    </header>
+
+
+    <!--
+        Contenuto principale
+    -->
+    <main class="app-main add-booking-main">
+
+        <!--
+            Titolo pagina
+        -->
+        <section class="page-heading add-booking-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    NUOVA CORSA
+                </span>
+
+                <h1>
+                    Aggiungi prenotazione
+                </h1>
+
+                <p>
+                    Inserisci una nuova corsa scegliendo
+                    il metodo che preferisci.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            Selettore modalità di inserimento
+        -->
+        <section class="booking-input-methods">
+
+            <button
+                type="button"
+                class="input-method-button active"
+                data-input-method="manual"
+                aria-selected="true"
+            >
+
+                <span class="input-method-icon">
+                    ✎
+                </span>
+
+                <span class="input-method-text">
+
+                    <strong>
+                        Manuale
+                    </strong>
+
+                    <small>
+                        Compila il modulo
+                    </small>
+
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="input-method-button"
+                data-input-method="voice"
+                aria-selected="false"
+            >
+
+                <span class="input-method-icon">
+                    🎙
+                </span>
+
+                <span class="input-method-text">
+
+                    <strong>
+                        Voce
+                    </strong>
+
+                    <small>
+                        Parla per inserire la corsa
+                    </small>
+
+                </span>
+
+            </button>
+
+
+            <button
+                type="button"
+                class="input-method-button"
+                data-input-method="whatsapp"
+                aria-selected="false"
+            >
+
+                <span class="input-method-icon">
+                    💬
+                </span>
+
+                <span class="input-method-text">
+
+                    <strong>
+                        WhatsApp
+                    </strong>
+
+                    <small>
+                        Incolla il messaggio
+                    </small>
+
+                </span>
+
+            </button>
+
+        </section>
+
+
+        <!--
+            =====================================================
+            MODALITÀ MANUALE
+            =====================================================
+        -->
+        <section
+            id="manual-input-panel"
+            class="booking-input-panel active"
+            data-panel="manual"
+        >
+
+            <div class="panel-heading">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        INSERIMENTO MANUALE
+                    </span>
+
+                    <h2>
+                        Dati della prenotazione
+                    </h2>
+
+                    <p>
+                        Tutti i campi sono facoltativi.
+                        Inserisci solo le informazioni che hai.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form
+                id="booking-form"
+                class="booking-form"
+                novalidate
+            >
+
+                <!--
+                    DATI CLIENTE
+                -->
+                <fieldset class="form-section">
+
+                    <legend>
+                        Cliente
+                    </legend>
+
+
+                    <div class="form-grid form-grid-two">
+
+                        <div class="form-group">
+
+                            <label for="booking-first-name">
+                                Nome
+                            </label>
+
+                            <input
+                                type="text"
+                                id="booking-first-name"
+                                name="firstName"
+                                placeholder="Es. Mario"
+                                autocomplete="given-name"
+                                maxlength="50"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="booking-last-name">
+                                Cognome
+                            </label>
+
+                            <input
+                                type="text"
+                                id="booking-last-name"
+                                name="lastName"
+                                placeholder="Es. Rossi"
+                                autocomplete="family-name"
+                                maxlength="80"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="booking-phone">
+                            Telefono
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="booking-phone"
+                            name="phone"
+                            placeholder="Es. +39 333 1234567"
+                            autocomplete="tel"
+                            inputmode="tel"
+                            maxlength="30"
+                        >
+
+                        <small class="form-help">
+                            Puoi inserire il numero con +39,
+                            0039 oppure senza prefisso.
+                        </small>
+
+                    </div>
+
+                </fieldset>
+
+
+                <!--
+                    PERCORSO
+                -->
+                <fieldset class="form-section">
+
+                    <legend>
+                        Percorso
+                    </legend>
+
+
+                    <div class="form-group">
+
+                        <label for="booking-departure">
+                            Partenza
+                        </label>
+
+                        <div class="address-input-wrapper">
+
+                            <span class="address-marker start">
+                                A
+                            </span>
+
+                            <input
+                                type="text"
+                                id="booking-departure"
+                                name="departure"
+                                placeholder="Indirizzo di partenza"
+                                autocomplete="street-address"
+                                maxlength="250"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="route-form-connector"></div>
+
+
+                    <div class="form-group">
+
+                        <label for="booking-destination">
+                            Destinazione
+                        </label>
+
+                        <div class="address-input-wrapper">
+
+                            <span class="address-marker end">
+                                B
+                            </span>
+
+                            <input
+                                type="text"
+                                id="booking-destination"
+                                name="destination"
+                                placeholder="Indirizzo di destinazione"
+                                maxlength="250"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </fieldset>
+
+
+                <!--
+                    DATA E ORARIO
+                -->
+                <fieldset class="form-section">
+
+                    <legend>
+                        Data e orario
+                    </legend>
+
+
+                    <div class="form-grid form-grid-two">
+
+                        <div class="form-group">
+
+                            <label for="booking-date">
+                                Data
+                            </label>
+
+                            <input
+                                type="date"
+                                id="booking-date"
+                                name="date"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="booking-time">
+                                Ora
+                            </label>
+
+                            <input
+                                type="time"
+                                id="booking-time"
+                                name="time"
+                            >
+
+                        </div>
+
+                    </div>
+
+                </fieldset>
+
+
+                <!--
+                    PASSEGGERI
+                -->
+                <fieldset class="form-section">
+
+                    <legend>
+                        Passeggeri
+                    </legend>
+
+
+                    <div class="passenger-selector">
+
+                        <button
+                            type="button"
+                            id="passengers-minus"
+                            class="passenger-button"
+                            aria-label="Diminuisci passeggeri"
+                        >
+                            −
+                        </button>
+
+
+                        <div class="passenger-value">
+
+                            <strong id="passengers-value">
+                                1
+                            </strong>
+
+                            <span>
+                                passeggero
+                            </span>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            id="passengers-plus"
+                            class="passenger-button"
+                            aria-label="Aumenta passeggeri"
+                        >
+                            +
+                        </button>
+
+                    </div>
+
+
+                    <input
+                        type="hidden"
+                        id="booking-passengers"
+                        name="passengers"
+                        value="1"
+                    >
+
+                </fieldset>
+
+
+                <!--
+                    NOTE
+                -->
+                <fieldset class="form-section">
+
+                    <legend>
+                        Note
+                    </legend>
+
+
+                    <div class="form-group">
+
+                        <label for="booking-notes">
+                            Note aggiuntive
+                        </label>
+
+                        <textarea
+                            id="booking-notes"
+                            name="notes"
+                            rows="5"
+                            maxlength="1000"
+                            placeholder="Es. Seggiolino, attesa, volo, bagagli, richieste del cliente..."
+                        ></textarea>
+
+
+                        <div class="textarea-counter">
+
+                            <span>
+                                Note
+                            </span>
+
+                            <span>
+                                <strong id="booking-notes-count">
+                                    0
+                                </strong>
+                                / 1000
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </fieldset>
+
+
+                <!--
+                    Messaggio errore form
+                -->
+                <div
+                    id="booking-form-error"
+                    class="form-error-box"
+                    role="alert"
+                    hidden
+                ></div>
+
+
+                <!--
+                    Pulsante anteprima
+                -->
+                <button
+                    type="submit"
+                    id="booking-preview-button"
+                    class="btn btn-primary btn-large btn-full"
+                >
+                    Continua
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!--
+            =====================================================
+            MODALITÀ VOCE
+            =====================================================
+        -->
+        <section
+            id="voice-input-panel"
+            class="booking-input-panel"
+            data-panel="voice"
+            hidden
+        >
+
+            <div class="panel-heading">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        INSERIMENTO VOCALE
+                    </span>
+
+                    <h2>
+                        Parla e crea la prenotazione
+                    </h2>
+
+                    <p>
+                        Pronuncia le informazioni della corsa
+                        in modo naturale. CTL Manager proverà
+                        a riconoscere automaticamente cliente,
+                        telefono, indirizzi, data, ora,
+                        passeggeri e note.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="voice-card">
+
+                <button
+                    type="button"
+                    id="voice-start-button"
+                    class="voice-record-button"
+                    aria-label="Avvia registrazione vocale"
+                >
+
+                    <span class="voice-record-icon">
+                        🎙
+                    </span>
+
+                    <span class="voice-record-label">
+                        Tocca per parlare
+                    </span>
+
+                </button>
+
+
+                <div
+                    id="voice-status"
+                    class="voice-status"
+                    aria-live="polite"
+                >
+                    Premi il pulsante e detta
+                    i dati della prenotazione.
+                </div>
+
+
+                <div
+                    id="voice-timer"
+                    class="voice-timer"
+                    hidden
+                >
+                    00:00
+                </div>
+
+
+                <button
+                    type="button"
+                    id="voice-stop-button"
+                    class="btn btn-secondary"
+                    hidden
+                >
+                    Ferma registrazione
+                </button>
+
+            </div>
+
+
+            <!--
+                Testo riconosciuto
+            -->
+            <div
+                id="voice-transcript-container"
+                class="voice-transcript-container"
+                hidden
+            >
+
+                <div class="panel-heading-small">
+
+                    <span class="section-eyebrow">
+                        TESTO RICONOSCIUTO
+                    </span>
+
+                    <h3>
+                        Controlla quello che ho capito
+                    </h3>
+
+                </div>
+
+
+                <div
+                    id="voice-transcript"
+                    class="voice-transcript"
+                ></div>
+
+
+                <button
+                    type="button"
+                    id="voice-process-button"
+                    class="btn btn-primary btn-full"
+                >
+                    Analizza prenotazione
+                </button>
+
+            </div>
+
+
+            <div class="voice-info">
+
+                <div class="voice-info-icon">
+                    i
+                </div>
+
+                <p>
+                    Dopo il riconoscimento potrai controllare
+                    tutti i dati prima di salvare la corsa.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            =====================================================
+            MODALITÀ WHATSAPP / TESTO
+            =====================================================
+        -->
+        <section
+            id="whatsapp-input-panel"
+            class="booking-input-panel"
+            data-panel="whatsapp"
+            hidden
+        >
+
+            <div class="panel-heading">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        DA WHATSAPP
+                    </span>
+
+                    <h2>
+                        Incolla il messaggio
+                    </h2>
+
+                    <p>
+                        Copia il messaggio ricevuto su WhatsApp
+                        e incollalo qui sotto. CTL Manager analizzerà
+                        il testo e proverà a riconoscere automaticamente
+                        tutti i dati della prenotazione.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!--
+                Avviso tecnico:
+                una web app locale senza API/server non può
+                leggere automaticamente le chat WhatsApp.
+            -->
+            <div class="whatsapp-info">
+
+                <div class="whatsapp-info-icon">
+                    💬
+                </div>
+
+                <div>
+
+                    <strong>
+                        Come funziona
+                    </strong>
+
+                    <p>
+                        Apri WhatsApp, copia il messaggio del cliente
+                        e incollalo qui. Non serve modificare il testo.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="whatsapp-message">
+                    Messaggio WhatsApp
+                </label>
+
+                <textarea
+                    id="whatsapp-message"
+                    rows="10"
+                    maxlength="5000"
+                    placeholder="Incolla qui il messaggio ricevuto..."
+                ></textarea>
+
+
+                <div class="textarea-counter">
+
+                    <span>
+                        Messaggio
+                    </span>
+
+                    <span>
+                        <strong id="whatsapp-message-count">
+                            0
+                        </strong>
+                        / 5000
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="whatsapp-parse-error"
+                class="form-error-box"
+                role="alert"
+                hidden
+            ></div>
+
+
+            <button
+                type="button"
+                id="whatsapp-process-button"
+                class="btn btn-primary btn-large btn-full"
+            >
+                Analizza messaggio
+            </button>
+
+
+            <button
+                type="button"
+                id="whatsapp-clear-button"
+                class="btn btn-text btn-full"
+            >
+                Cancella testo
+            </button>
+
+        </section>
+
+
+        <!--
+            =====================================================
+            ANTEPRIMA PRENOTAZIONE
+            =====================================================
+        -->
+        <section
+            id="booking-preview-panel"
+            class="booking-preview-panel"
+            hidden
+        >
+
+            <div class="panel-heading">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        VERIFICA
+                    </span>
+
+                    <h2>
+                        Controlla la prenotazione
+                    </h2>
+
+                    <p>
+                        Verifica che le informazioni riconosciute
+                        siano corrette prima di confermare.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!--
+                Avviso blacklist.
+                Viene mostrato dinamicamente solo quando
+                il cliente corrisponde a un contatto bloccato.
+            -->
+            <div
+                id="blacklist-warning"
+                class="blacklist-warning"
+                hidden
+            >
+
+                <div class="blacklist-warning-icon">
+                    !
+                </div>
+
+                <div class="blacklist-warning-content">
+
+                    <strong>
+                        Attenzione: cliente nella blacklist
+                    </strong>
+
+                    <p id="blacklist-warning-text">
+                        Questo cliente è presente nella lista
+                        dei contatti bloccati.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!--
+                Riepilogo dati
+            -->
+            <div class="preview-card">
+
+                <div class="preview-row">
+
+                    <span class="preview-label">
+                        CLIENTE
+                    </span>
+
+                    <strong id="preview-client">
+                        Non specificato
+                    </strong>
+
+                </div>
+
+
+                <div
+                    class="preview-row"
+                    id="preview-phone-row"
+                    hidden
+                >
+
+                    <span class="preview-label">
+                        TELEFONO
+                    </span>
+
+                    <a
+                        id="preview-phone"
+                        href="#"
+                    >
+                        -
+                    </a>
+
+                </div>
+
+
+                <div class="preview-divider"></div>
+
+
+                <div class="preview-route">
+
+                    <div class="preview-route-point">
+
+                        <span class="route-marker route-marker-start">
+                            A
+                        </span>
+
+                        <div>
+
+                            <span class="preview-label">
+                                PARTENZA
+                            </span>
+
+                            <strong id="preview-departure">
+                                Non specificata
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="preview-route-line"></div>
+
+
+                    <div class="preview-route-point">
+
+                        <span class="route-marker route-marker-end">
+                            B
+                        </span>
+
+                        <div>
+
+                            <span class="preview-label">
+                                DESTINAZIONE
+                            </span>
+
+                            <strong id="preview-destination">
+                                Non specificata
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="preview-divider"></div>
+
+
+                <div class="preview-grid">
+
+                    <div class="preview-row">
+
+                        <span class="preview-label">
+                            DATA
+                        </span>
+
+                        <strong id="preview-date">
+                            Non specificata
+                        </strong>
+
+                    </div>
+
+
+                    <div class="preview-row">
+
+                        <span class="preview-label">
+                            ORA
+                        </span>
+
+                        <strong id="preview-time">
+                            Non specificata
+                        </strong>
+
+                    </div>
+
+
+                    <div class="preview-row">
+
+                        <span class="preview-label">
+                            PASSEGGERI
+                        </span>
+
+                        <strong id="preview-passengers">
+                            1
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="preview-notes-row"
+                    class="preview-notes-row"
+                    hidden
+                >
+
+                    <span class="preview-label">
+                        NOTE
+                    </span>
+
+                    <p id="preview-notes">
+                        -
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!--
+                Pulsanti anteprima
+            -->
+            <div class="preview-actions">
+
+                <button
+                    type="button"
+                    id="preview-edit-button"
+                    class="btn btn-secondary btn-large"
+                >
+                    Modifica
+                </button>
+
+
+                <button
+                    type="button"
+                    id="preview-confirm-button"
+                    class="btn btn-primary btn-large"
+                >
+                    Conferma prenotazione
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            =====================================================
+            RISULTATO SALVATAGGIO
+            =====================================================
+        -->
+        <section
+            id="booking-success-panel"
+            class="booking-success-panel"
+            hidden
+        >
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <span class="section-eyebrow">
+                PRENOTAZIONE SALVATA
+            </span>
+
+            <h2>
+                Corsa aggiunta correttamente
+            </h2>
+
+            <p id="booking-success-message">
+                La prenotazione è stata salvata.
+            </p>
+
+
+            <div class="success-actions">
+
+                <a
+                    href="home.html"
+                    class="btn btn-primary btn-large"
+                >
+                    Vai alla Home
+                </a>
+
+
+                <button
+                    type="button"
+                    id="add-another-booking"
+                    class="btn btn-secondary btn-large"
+                >
+                    Aggiungi un'altra
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!--
+        Navigazione inferiore
+    -->
+    <nav
+        class="bottom-navigation"
+        aria-label="Navigazione principale"
+    >
+
+        <a
+            href="home.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ⌂
+            </span>
+
+            <span class="bottom-nav-label">
+                Home
+            </span>
+
+        </a>
+
+
+        <a
+            href="prenotazioni.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ☷
+            </span>
+
+            <span class="bottom-nav-label">
+                Prenotazioni
+            </span>
+
+        </a>
+
+
+        <a
+            href="aggiungi-prenotazione.html"
+            class="bottom-nav-add active"
+            aria-label="Aggiungi prenotazione"
+            aria-current="page"
+        >
+            +
+        </a>
+
+
+        <a
+            href="calendario.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ▣
+            </span>
+
+            <span class="bottom-nav-label">
+                Calendario
+            </span>
+
+        </a>
+
+
+        <a
+            href="profilo.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ◉
+            </span>
+
+            <span class="bottom-nav-label">
+                Profilo
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <!--
+        Script condivisi
+    -->
+    <script
+        src="../js/storage.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/utils.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/parser.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/app.js"
+        defer
+    ></script>
+
+</body>
+
+</html>
