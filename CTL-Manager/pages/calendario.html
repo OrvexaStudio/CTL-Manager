@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#102A43"
+    >
+
+    <meta
+        name="description"
+        content="CTL Manager - Calendario"
+    >
+
+    <title>Calendario - CTL Manager</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
+
+</head>
+
+
+<body class="app-page">
+
+    <!--
+        Header
+    -->
+    <header class="app-header">
+
+        <div class="app-header-content">
+
+            <div class="app-brand">
+
+                <div class="app-brand-logo">
+                    CTL
+                </div>
+
+                <div class="app-brand-text">
+                    CTL Manager
+                </div>
+
+            </div>
+
+
+            <a
+                href="profilo.html"
+                class="header-profile-button"
+                aria-label="Apri profilo"
+            >
+
+                <span
+                    id="header-driver-initial"
+                    class="header-profile-initial"
+                >
+                    -
+                </span>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!--
+        Contenuto principale
+    -->
+    <main class="app-main">
+
+        <!--
+            Intestazione calendario
+        -->
+        <section class="page-heading calendar-page-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    PROGRAMMA
+                </span>
+
+                <h1>
+                    Calendario
+                </h1>
+
+                <p>
+                    Visualizza rapidamente le corse
+                    programmate per ogni giornata.
+                </p>
+
+            </div>
+
+
+            <a
+                href="prenotazioni.html"
+                class="btn btn-secondary"
+            >
+                <span>
+                    ☷
+                </span>
+
+                Prenotazioni
+            </a>
+
+        </section>
+
+
+        <!--
+            Calendario principale
+        -->
+        <section class="calendar-section">
+
+            <div class="calendar-card">
+
+                <!--
+                    Barra di navigazione del mese
+                -->
+                <header class="calendar-header">
+
+                    <button
+                        type="button"
+                        id="calendar-prev"
+                        class="calendar-nav-button"
+                        aria-label="Mese precedente"
+                    >
+                        ‹
+                    </button>
+
+
+                    <div class="calendar-current-month">
+
+                        <h2
+                            id="calendar-month-title"
+                        >
+                            -
+                        </h2>
+
+                        <button
+                            type="button"
+                            id="calendar-today"
+                            class="calendar-today-button"
+                        >
+                            Oggi
+                        </button>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        id="calendar-next"
+                        class="calendar-nav-button"
+                        aria-label="Mese successivo"
+                    >
+                        ›
+                    </button>
+
+                </header>
+
+
+                <!--
+                    Giorni della settimana
+                -->
+                <div
+                    class="calendar-weekdays"
+                    aria-hidden="true"
+                >
+
+                    <div>
+                        Lun
+                    </div>
+
+                    <div>
+                        Mar
+                    </div>
+
+                    <div>
+                        Mer
+                    </div>
+
+                    <div>
+                        Gio
+                    </div>
+
+                    <div>
+                        Ven
+                    </div>
+
+                    <div>
+                        Sab
+                    </div>
+
+                    <div>
+                        Dom
+                    </div>
+
+                </div>
+
+
+                <!--
+                    Griglia dei giorni.
+                    I giorni vengono generati da JavaScript.
+                -->
+                <div
+                    id="calendar-grid"
+                    class="calendar-grid"
+                >
+                    <!--
+                        Celle calendario generate dinamicamente.
+                    -->
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            Legenda
+        -->
+        <section class="calendar-legend">
+
+            <div class="calendar-legend-item">
+
+                <span class="calendar-legend-dot calendar-legend-today">
+                </span>
+
+                <span>
+                    Oggi
+                </span>
+
+            </div>
+
+
+            <div class="calendar-legend-item">
+
+                <span class="calendar-legend-dot calendar-legend-booking">
+                </span>
+
+                <span>
+                    Giorno con prenotazioni
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            Riepilogo del mese visualizzato
+        -->
+        <section class="calendar-month-summary">
+
+            <div class="calendar-summary-card">
+
+                <div class="calendar-summary-icon">
+                    🚘
+                </div>
+
+                <div class="calendar-summary-content">
+
+                    <span>
+                        CORSE DEL MESE
+                    </span>
+
+                    <strong id="calendar-month-rides">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="calendar-summary-card">
+
+                <div class="calendar-summary-icon">
+                    ◷
+                </div>
+
+                <div class="calendar-summary-content">
+
+                    <span>
+                        PROSSIMA CORSA
+                    </span>
+
+                    <strong id="calendar-next-ride">
+                        Nessuna
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            Dettaglio del giorno selezionato.
+            Rimane nascosto finché non viene selezionato
+            un giorno del calendario.
+        -->
+        <section
+            id="calendar-day-details"
+            class="calendar-day-details"
+            hidden
+        >
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        GIORNO SELEZIONATO
+                    </span>
+
+                    <h2 id="calendar-selected-date">
+                        -
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="calendar-day-rides"
+                class="rides-list"
+            >
+                <!-- Corse del giorno selezionato -->
+            </div>
+
+
+            <div
+                id="calendar-day-empty"
+                class="empty-state"
+                hidden
+            >
+
+                <div class="empty-state-icon">
+                    ✓
+                </div>
+
+                <h3>
+                    Nessuna corsa
+                </h3>
+
+                <p>
+                    Non risultano prenotazioni
+                    per questa giornata.
+                </p>
+
+                <a
+                    href="aggiungi-prenotazione.html"
+                    class="btn btn-primary"
+                >
+                    Aggiungi prenotazione
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            Pulsante flottante
+        -->
+        <a
+            href="aggiungi-prenotazione.html"
+            class="floating-add-button"
+            aria-label="Aggiungi prenotazione"
+        >
+            +
+        </a>
+
+    </main>
+
+
+    <!--
+        Navigazione inferiore
+    -->
+    <nav
+        class="bottom-navigation"
+        aria-label="Navigazione principale"
+    >
+
+        <a
+            href="home.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ⌂
+            </span>
+
+            <span class="bottom-nav-label">
+                Home
+            </span>
+
+        </a>
+
+
+        <a
+            href="prenotazioni.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ☷
+            </span>
+
+            <span class="bottom-nav-label">
+                Prenotazioni
+            </span>
+
+        </a>
+
+
+        <a
+            href="aggiungi-prenotazione.html"
+            class="bottom-nav-add"
+            aria-label="Aggiungi prenotazione"
+        >
+            +
+        </a>
+
+
+        <a
+            href="calendario.html"
+            class="bottom-nav-item active"
+            aria-current="page"
+        >
+
+            <span class="bottom-nav-icon">
+                ▣
+            </span>
+
+            <span class="bottom-nav-label">
+                Calendario
+            </span>
+
+        </a>
+
+
+        <a
+            href="profilo.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ◉
+            </span>
+
+            <span class="bottom-nav-label">
+                Profilo
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <!--
+        Script condivisi
+    -->
+    <script
+        src="../js/storage.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/utils.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/parser.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/app.js"
+        defer
+    ></script>
+
+</body>
+
+</html>
