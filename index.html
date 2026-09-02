@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#102A43"
+    >
+
+    <meta
+        name="description"
+        content="CTL Manager - Gestione professionale delle corse NCC"
+    >
+
+    <title>CTL Manager</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+</head>
+
+<body>
+
+    <!--
+        Schermata iniziale mostrata mentre
+        JavaScript controlla lo stato dell'app.
+    -->
+    <div
+        id="app-loader"
+        class="app-loader"
+    >
+        <div class="loader-logo">
+            CTL
+        </div>
+
+        <div class="loader-text">
+            CTL Manager
+        </div>
+
+        <div class="loader-spinner"></div>
+    </div>
+
+
+    <!--
+        Contenitore principale dell'app.
+        Le singole pagine verranno caricate
+        all'interno di questo elemento.
+    -->
+    <main id="app"></main>
+
+
+    <!--
+        Messaggi temporanei / notifiche.
+    -->
+    <div
+        id="toast-container"
+        class="toast-container"
+        aria-live="polite"
+    ></div>
+
+
+    <!--
+        Modale globale utilizzato per:
+        - conferme
+        - avvisi
+        - blacklist
+        - operazioni importanti
+    -->
+    <div
+        id="modal-container"
+        class="modal-container"
+    ></div>
+
+
+    <!--
+        JavaScript principale.
+    -->
+    <script
+        src="js/storage.js"
+        defer
+    ></script>
+
+    <script
+        src="js/utils.js"
+        defer
+    ></script>
+
+    <script
+        src="js/parser.js"
+        defer
+    ></script>
+
+    <script
+        src="js/app.js"
+        defer
+    ></script>
+
+</body>
+</html>
