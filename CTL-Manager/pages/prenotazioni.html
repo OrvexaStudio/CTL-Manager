@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#102A43"
+    >
+
+    <meta
+        name="description"
+        content="CTL Manager - Prenotazioni"
+    >
+
+    <title>Prenotazioni - CTL Manager</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
+
+</head>
+
+
+<body class="app-page">
+
+    <!--
+        Header
+    -->
+    <header class="app-header">
+
+        <div class="app-header-content">
+
+            <div class="app-brand">
+
+                <div class="app-brand-logo">
+                    CTL
+                </div>
+
+                <div class="app-brand-text">
+                    CTL Manager
+                </div>
+
+            </div>
+
+
+            <a
+                href="profilo.html"
+                class="header-profile-button"
+                aria-label="Apri profilo"
+            >
+
+                <span
+                    id="header-driver-initial"
+                    class="header-profile-initial"
+                >
+                    -
+                </span>
+
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!--
+        Contenuto principale
+    -->
+    <main class="app-main">
+
+        <!--
+            Titolo pagina
+        -->
+        <section class="page-heading">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    GESTIONE CORSE
+                </span>
+
+                <h1>
+                    Prenotazioni
+                </h1>
+
+                <p>
+                    Visualizza e gestisci tutte le tue corse programmate.
+                </p>
+
+            </div>
+
+
+            <a
+                href="calendario.html"
+                class="btn btn-secondary"
+            >
+                <span>
+                    ▣
+                </span>
+
+                Calendario
+            </a>
+
+        </section>
+
+
+        <!--
+            Barra di ricerca
+        -->
+        <section class="booking-search-section">
+
+            <div class="search-box">
+
+                <span
+                    class="search-icon"
+                    aria-hidden="true"
+                >
+                    ⌕
+                </span>
+
+                <input
+                    type="search"
+                    id="booking-search"
+                    placeholder="Cerca cliente, indirizzo o destinazione..."
+                    autocomplete="off"
+                    aria-label="Cerca prenotazione"
+                >
+
+                <button
+                    type="button"
+                    id="clear-booking-search"
+                    class="search-clear"
+                    aria-label="Cancella ricerca"
+                    hidden
+                >
+                    ×
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            Filtri
+        -->
+        <section class="booking-filters">
+
+            <div class="filter-group">
+
+                <label
+                    for="booking-date-filter"
+                >
+                    Data
+                </label>
+
+                <select
+                    id="booking-date-filter"
+                >
+
+                    <option value="all">
+                        Tutte le date
+                    </option>
+
+                    <option value="today">
+                        Oggi
+                    </option>
+
+                    <option value="tomorrow">
+                        Domani
+                    </option>
+
+                    <option value="week">
+                        Questa settimana
+                    </option>
+
+                    <option value="future">
+                        Prossime corse
+                    </option>
+
+                    <option value="past">
+                        Corse passate
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="filter-group">
+
+                <label
+                    for="booking-status-filter"
+                >
+                    Stato
+                </label>
+
+                <select
+                    id="booking-status-filter"
+                >
+
+                    <option value="all">
+                        Tutti gli stati
+                    </option>
+
+                    <option value="scheduled">
+                        Programmate
+                    </option>
+
+                    <option value="completed">
+                        Completate
+                    </option>
+
+                    <option value="cancelled">
+                        Annullate
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="reset-booking-filters"
+                class="btn btn-filter-reset"
+            >
+                Reimposta
+            </button>
+
+        </section>
+
+
+        <!--
+            Riepilogo risultati
+        -->
+        <section class="booking-summary">
+
+            <div class="booking-summary-count">
+
+                <strong id="booking-results-count">
+                    0
+                </strong>
+
+                <span>
+                    prenotazioni
+                </span>
+
+            </div>
+
+
+            <div
+                id="booking-active-filter-label"
+                class="booking-active-filter"
+                hidden
+            >
+                Filtri attivi
+            </div>
+
+        </section>
+
+
+        <!--
+            Lista completa delle prenotazioni.
+            JavaScript creerà dinamicamente i gruppi
+            per giorno.
+        -->
+        <section
+            id="bookings-container"
+            class="bookings-container"
+        >
+
+            <!--
+                Esempio della struttura che verrà generata:
+
+                <div class="booking-day-group">
+                    <div class="booking-day-header">
+                        ...
+                    </div>
+
+                    <div class="bookings-day-list">
+                        ...
+                    </div>
+                </div>
+            -->
+
+        </section>
+
+
+        <!--
+            Stato vuoto generale
+        -->
+        <section
+            id="bookings-empty"
+            class="empty-state page-empty-state"
+            hidden
+        >
+
+            <div class="empty-state-icon">
+                ☷
+            </div>
+
+            <h2>
+                Nessuna prenotazione
+            </h2>
+
+            <p>
+                Non ci sono prenotazioni che corrispondono
+                ai criteri selezionati.
+            </p>
+
+            <a
+                href="aggiungi-prenotazione.html"
+                class="btn btn-primary"
+            >
+                Aggiungi prenotazione
+            </a>
+
+        </section>
+
+
+        <!--
+            Stato mostrato quando la ricerca non
+            restituisce risultati.
+        -->
+        <section
+            id="bookings-search-empty"
+            class="empty-state page-empty-state"
+            hidden
+        >
+
+            <div class="empty-state-icon">
+                ⌕
+            </div>
+
+            <h2>
+                Nessun risultato
+            </h2>
+
+            <p>
+                Non abbiamo trovato prenotazioni
+                corrispondenti alla tua ricerca.
+            </p>
+
+            <button
+                type="button"
+                id="clear-search-empty"
+                class="btn btn-secondary"
+            >
+                Cancella ricerca
+            </button>
+
+        </section>
+
+
+        <!--
+            Pulsante flottante per aggiungere
+            rapidamente una prenotazione.
+        -->
+        <a
+            href="aggiungi-prenotazione.html"
+            class="floating-add-button"
+            aria-label="Aggiungi prenotazione"
+        >
+            +
+        </a>
+
+    </main>
+
+
+    <!--
+        Navigazione inferiore
+    -->
+    <nav
+        class="bottom-navigation"
+        aria-label="Navigazione principale"
+    >
+
+        <a
+            href="home.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ⌂
+            </span>
+
+            <span class="bottom-nav-label">
+                Home
+            </span>
+
+        </a>
+
+
+        <a
+            href="prenotazioni.html"
+            class="bottom-nav-item active"
+            aria-current="page"
+        >
+
+            <span class="bottom-nav-icon">
+                ☷
+            </span>
+
+            <span class="bottom-nav-label">
+                Prenotazioni
+            </span>
+
+        </a>
+
+
+        <a
+            href="aggiungi-prenotazione.html"
+            class="bottom-nav-add"
+            aria-label="Aggiungi prenotazione"
+        >
+            +
+        </a>
+
+
+        <a
+            href="calendario.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ▣
+            </span>
+
+            <span class="bottom-nav-label">
+                Calendario
+            </span>
+
+        </a>
+
+
+        <a
+            href="profilo.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ◉
+            </span>
+
+            <span class="bottom-nav-label">
+                Profilo
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <!--
+        Script condivisi
+    -->
+    <script
+        src="../js/storage.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/utils.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/parser.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/app.js"
+        defer
+    ></script>
+
+</body>
+
+</html>
