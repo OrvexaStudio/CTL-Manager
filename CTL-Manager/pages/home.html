@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#102A43"
+    >
+
+    <meta
+        name="description"
+        content="CTL Manager - Home"
+    >
+
+    <title>Home - CTL Manager</title>
+
+    <link
+        rel="stylesheet"
+        href="../css/style.css"
+    >
+
+</head>
+
+
+<body class="app-page">
+
+    <!--
+        Header principale
+    -->
+    <header class="app-header">
+
+        <div class="app-header-content">
+
+            <div class="app-brand">
+
+                <div class="app-brand-logo">
+                    CTL
+                </div>
+
+                <div class="app-brand-text">
+                    CTL Manager
+                </div>
+
+            </div>
+
+
+            <a
+                href="profilo.html"
+                class="header-profile-button"
+                aria-label="Apri profilo"
+            >
+                <span
+                    id="header-driver-initial"
+                    class="header-profile-initial"
+                >
+                    -
+                </span>
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!--
+        Contenuto principale
+    -->
+    <main class="app-main">
+
+        <!--
+            Saluto personalizzato
+        -->
+        <section class="home-greeting">
+
+            <div>
+
+                <span
+                    id="home-greeting-label"
+                    class="section-eyebrow"
+                >
+                    BUONGIORNO
+                </span>
+
+                <h1>
+                    Ciao,
+                    <span id="home-driver-name">
+                        Autista
+                    </span>
+                </h1>
+
+                <p id="home-current-date">
+                    -
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            Card della prossima corsa
+        -->
+        <section class="next-ride-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        PROSSIMA CORSA
+                    </span>
+
+                    <h2>
+                        Il tuo prossimo appuntamento
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <article
+                id="next-ride-card"
+                class="next-ride-card"
+            >
+
+                <!--
+                    Stato mostrato quando esiste una prossima corsa.
+                    I dati vengono inseriti da JavaScript.
+                -->
+                <div
+                    id="next-ride-content"
+                    class="next-ride-content"
+                >
+
+                    <div class="next-ride-top">
+
+                        <div>
+
+                            <span
+                                id="next-ride-date"
+                                class="next-ride-date"
+                            >
+                                -
+                            </span>
+
+                            <div
+                                id="next-ride-time"
+                                class="next-ride-time"
+                            >
+                                --:--
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="next-ride-passengers"
+                            class="ride-passengers"
+                        >
+                            -
+                        </div>
+
+                    </div>
+
+
+                    <div class="ride-route">
+
+                        <div class="route-point">
+
+                            <span class="route-marker route-marker-start">
+                                A
+                            </span>
+
+                            <div>
+
+                                <span class="route-label">
+                                    PARTENZA
+                                </span>
+
+                                <strong id="next-ride-departure">
+                                    -
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="route-line"></div>
+
+
+                        <div class="route-point">
+
+                            <span class="route-marker route-marker-end">
+                                B
+                            </span>
+
+                            <div>
+
+                                <span class="route-label">
+                                    DESTINAZIONE
+                                </span>
+
+                                <strong id="next-ride-destination">
+                                    -
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="next-ride-client">
+
+                        <div class="client-info">
+
+                            <span class="client-avatar">
+                                <span id="next-ride-client-initial">
+                                    -
+                                </span>
+                            </span>
+
+                            <div>
+
+                                <span class="route-label">
+                                    CLIENTE
+                                </span>
+
+                                <strong id="next-ride-client-name">
+                                    -
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        <a
+                            id="next-ride-call"
+                            class="btn btn-call"
+                            href="#"
+                            hidden
+                        >
+                            <span>
+                                ☎
+                            </span>
+
+                            Chiama
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!--
+                    Stato mostrato quando non ci sono corse.
+                -->
+                <div
+                    id="next-ride-empty"
+                    class="empty-state next-ride-empty"
+                    hidden
+                >
+
+                    <div class="empty-state-icon">
+                        ✓
+                    </div>
+
+                    <h3>
+                        Nessuna corsa in programma
+                    </h3>
+
+                    <p>
+                        Non ci sono altre prenotazioni
+                        previste per oggi.
+                    </p>
+
+                    <a
+                        href="aggiungi-prenotazione.html"
+                        class="btn btn-primary"
+                    >
+                        Aggiungi prenotazione
+                    </a>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!--
+            Statistiche rapide
+        -->
+        <section class="home-stats">
+
+            <article class="stat-card">
+
+                <div class="stat-card-icon">
+                    🚘
+                </div>
+
+                <div class="stat-card-content">
+
+                    <span>
+                        CORSE DI OGGI
+                    </span>
+
+                    <strong id="today-rides-count">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+
+            <article class="stat-card">
+
+                <div class="stat-card-icon">
+                    ✓
+                </div>
+
+                <div class="stat-card-content">
+
+                    <span>
+                        COMPLETATE
+                    </span>
+
+                    <strong id="today-completed-count">
+                        0
+                    </strong>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+        <!--
+            Elenco delle corse odierne
+        -->
+        <section class="today-rides-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        PROGRAMMA
+                    </span>
+
+                    <h2>
+                        Le tue corse di oggi
+                    </h2>
+
+                </div>
+
+
+                <a
+                    href="prenotazioni.html"
+                    class="section-link"
+                >
+                    Vedi tutte
+                </a>
+
+            </div>
+
+
+            <!--
+                Lista generata dinamicamente da app.js
+            -->
+            <div
+                id="today-rides-list"
+                class="rides-list"
+            >
+                <!-- Le corse verranno inserite qui -->
+            </div>
+
+
+            <!--
+                Stato vuoto
+            -->
+            <div
+                id="today-rides-empty"
+                class="empty-state"
+                hidden
+            >
+
+                <div class="empty-state-icon">
+                    +
+                </div>
+
+                <h3>
+                    Giornata libera
+                </h3>
+
+                <p>
+                    Non hai ancora inserito corse
+                    per oggi.
+                </p>
+
+                <a
+                    href="aggiungi-prenotazione.html"
+                    class="btn btn-primary"
+                >
+                    Aggiungi corsa
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!--
+            Azione rapida per aggiungere una corsa
+        -->
+        <section class="quick-add-section">
+
+            <a
+                href="aggiungi-prenotazione.html"
+                class="quick-add-card"
+            >
+
+                <span class="quick-add-icon">
+                    +
+                </span>
+
+                <span class="quick-add-content">
+
+                    <strong>
+                        Nuova prenotazione
+                    </strong>
+
+                    <small>
+                        Inserisci una nuova corsa
+                    </small>
+
+                </span>
+
+                <span class="quick-add-arrow">
+                    →
+                </span>
+
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <!--
+        Barra di navigazione inferiore.
+        Il pulsante centrale "+" è dedicato
+        all'inserimento di una nuova prenotazione.
+    -->
+    <nav
+        class="bottom-navigation"
+        aria-label="Navigazione principale"
+    >
+
+        <a
+            href="home.html"
+            class="bottom-nav-item active"
+            aria-current="page"
+        >
+
+            <span class="bottom-nav-icon">
+                ⌂
+            </span>
+
+            <span class="bottom-nav-label">
+                Home
+            </span>
+
+        </a>
+
+
+        <a
+            href="prenotazioni.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ☷
+            </span>
+
+            <span class="bottom-nav-label">
+                Prenotazioni
+            </span>
+
+        </a>
+
+
+        <a
+            href="aggiungi-prenotazione.html"
+            class="bottom-nav-add"
+            aria-label="Aggiungi prenotazione"
+        >
+            +
+        </a>
+
+
+        <a
+            href="calendario.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ▣
+            </span>
+
+            <span class="bottom-nav-label">
+                Calendario
+            </span>
+
+        </a>
+
+
+        <a
+            href="profilo.html"
+            class="bottom-nav-item"
+        >
+
+            <span class="bottom-nav-icon">
+                ◉
+            </span>
+
+            <span class="bottom-nav-label">
+                Profilo
+            </span>
+
+        </a>
+
+    </nav>
+
+
+    <!--
+        Script condivisi
+    -->
+    <script
+        src="../js/storage.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/utils.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/parser.js"
+        defer
+    ></script>
+
+    <script
+        src="../js/app.js"
+        defer
+    ></script>
+
+</body>
+
+</html>
