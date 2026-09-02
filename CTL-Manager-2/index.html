@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#173A52">
+  <title>CTL Manager</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script>
+    const state = JSON.parse(localStorage.getItem("ctlManager") || "{}");
+    window.location.replace(
+      state.driverName
+        ? "pages/home.html"
+        : "pages/login.html"
+    );
+  </script>
+</body>
+</html>
