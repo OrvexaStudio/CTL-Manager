@@ -1,188 +1,320 @@
 <!DOCTYPE html>
 <html lang="it">
-
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     >
 
     <meta
         name="theme-color"
-        content="#102A43"
+        content="#f5f1eb"
     >
 
-    <meta
-        name="description"
-        content="Accesso a CTL Manager"
-    >
-
-    <title>Accesso - CTL Manager</title>
+    <title>CTL Manager — Accesso</title>
 
     <link
         rel="stylesheet"
         href="../css/style.css"
     >
-
 </head>
 
-
-<body class="auth-page">
+<body class="app-body login-page">
 
     <main class="auth-container">
 
-        <!--
-            Logo / identificativo applicazione
-        -->
-        <div class="auth-brand">
-
-            <div class="auth-logo">
-                CTL
-            </div>
-
-            <div class="auth-brand-name">
-                CTL Manager
-            </div>
-
-        </div>
-
-
-        <!--
-            Contenuto principale del login
-        -->
         <section class="auth-card">
 
-            <div class="auth-card-header">
+            <div class="auth-brand">
+                <div class="auth-logo">
+                    CTL
+                </div>
 
-                <span class="auth-eyebrow">
-                    BENVENUTO
-                </span>
+                <div class="auth-brand-text">
+                    <span class="auth-title">
+                        CTL Manager
+                    </span>
 
-                <h1>
-                    Iniziamo
-                </h1>
-
-                <p>
-                    Inserisci il tuo nome per personalizzare
-                    CTL Manager e iniziare a gestire le tue corse.
-                </p>
-
+                    <span class="auth-subtitle">
+                        Gestione professionale delle corse
+                    </span>
+                </div>
             </div>
 
 
-            <!--
-                Form di configurazione iniziale.
-                La gestione del salvataggio verrà effettuata
-                da storage.js e app.js.
-            -->
-            <form
-                id="login-form"
-                class="auth-form"
-                autocomplete="on"
-            >
+            <div class="auth-content">
 
-                <div class="form-group">
+                <div class="auth-heading">
+                    <span class="eyebrow">
+                        Primo accesso
+                    </span>
 
-                    <label
-                        for="driver-name"
-                    >
-                        Nome autista
-                    </label>
+                    <h1>
+                        Benvenuto
+                    </h1>
 
-                    <input
-                        type="text"
-                        id="driver-name"
-                        name="driverName"
-                        placeholder="Es. Francesco"
-                        autocomplete="name"
-                        maxlength="50"
-                        required
-                    >
-
-                    <p
-                        id="login-error"
-                        class="form-error"
-                        role="alert"
-                        hidden
-                    ></p>
-
+                    <p>
+                        Configuriamo il tuo profilo in pochi secondi.
+                    </p>
                 </div>
 
 
-                <button
-                    type="submit"
-                    id="login-continue"
-                    class="btn btn-primary btn-large"
+                <form
+                    id="loginForm"
+                    class="auth-form"
+                    novalidate
                 >
-                    Continua
-                </button>
 
-            </form>
+                    <div class="form-group">
+
+                        <label
+                            for="driverName"
+                        >
+                            Nome autista
+                        </label>
+
+                        <input
+                            type="text"
+                            id="driverName"
+                            name="driverName"
+                            class="form-input"
+                            placeholder="Inserisci il tuo nome"
+                            autocomplete="name"
+                            maxlength="50"
+                            required
+                        >
+
+                        <p
+                            id="driverNameError"
+                            class="form-error"
+                            hidden
+                        >
+                            Inserisci il tuo nome per continuare.
+                        </p>
+
+                    </div>
 
 
-            <div class="auth-note">
+                    <button
+                        type="submit"
+                        id="loginContinueButton"
+                        class="primary-button auth-button"
+                    >
+                        Continua
+                    </button>
 
-                <span class="auth-note-icon">
-                    ✓
-                </span>
-
-                <span>
-                    I tuoi dati vengono salvati
-                    direttamente sul dispositivo.
-                </span>
+                </form>
 
             </div>
 
+
+            <footer class="auth-footer">
+                <span>
+                    CTL Manager
+                </span>
+
+                <span
+                    aria-hidden="true"
+                >
+                    ·
+                </span>
+
+                <span>
+                    Cooperativa Taxi Lecce
+                </span>
+            </footer>
+
         </section>
-
-
-        <footer class="auth-footer">
-
-            <span>
-                CTL Manager
-            </span>
-
-            <span class="auth-footer-separator">
-                •
-            </span>
-
-            <span>
-                Gestione professionale delle corse
-            </span>
-
-        </footer>
 
     </main>
 
 
-    <!--
-        Script condivisi dell'app.
-        Il percorso è relativo perché questa pagina
-        si trova all'interno della cartella /pages/.
-    -->
-    <script
-        src="../js/storage.js"
-        defer
-    ></script>
+    <script src="../js/storage.js"></script>
+    <script src="../js/utils.js"></script>
 
-    <script
-        src="../js/utils.js"
-        defer
-    ></script>
+    <script>
+        (function () {
+            "use strict";
 
-    <script
-        src="../js/parser.js"
-        defer
-    ></script>
+            const Storage =
+                window.CTLStorage;
 
-    <script
-        src="../js/app.js"
-        defer
-    ></script>
+            const Utils =
+                window.CTLUtils;
+
+            const form =
+                document.getElementById(
+                    "loginForm"
+                );
+
+            const driverNameInput =
+                document.getElementById(
+                    "driverName"
+                );
+
+            const error =
+                document.getElementById(
+                    "driverNameError"
+                );
+
+            const button =
+                document.getElementById(
+                    "loginContinueButton"
+                );
+
+
+            /*
+             * Se il profilo è già stato configurato,
+             * non mostriamo nuovamente il login.
+             */
+            if (
+                Storage &&
+                typeof Storage.hasCompletedLogin ===
+                    "function" &&
+                Storage.hasCompletedLogin()
+            ) {
+                window.location.replace(
+                    "welcome.html"
+                );
+
+                return;
+            }
+
+
+            /*
+             * Recupera eventualmente un nome già
+             * digitato/salvato.
+             */
+            if (
+                Storage &&
+                typeof Storage.getProfile ===
+                    "function"
+            ) {
+                const profile =
+                    Storage.getProfile();
+
+                if (
+                    profile &&
+                    profile.driverName
+                ) {
+                    driverNameInput.value =
+                        profile.driverName;
+                }
+            }
+
+
+            function showError() {
+                error.hidden = false;
+
+                driverNameInput.classList.add(
+                    "input-error"
+                );
+
+                driverNameInput.focus();
+            }
+
+
+            function hideError() {
+                error.hidden = true;
+
+                driverNameInput.classList.remove(
+                    "input-error"
+                );
+            }
+
+
+            driverNameInput.addEventListener(
+                "input",
+                function () {
+                    if (
+                        Utils &&
+                        typeof Utils.cleanText ===
+                            "function"
+                    ) {
+                        driverNameInput.value =
+                            driverNameInput.value
+                                .replace(/\s+/g, " ");
+                    }
+
+                    if (
+                        driverNameInput.value.trim()
+                    ) {
+                        hideError();
+                    }
+                }
+            );
+
+
+            form.addEventListener(
+                "submit",
+                function (event) {
+                    event.preventDefault();
+
+                    const driverName =
+                        Utils &&
+                        typeof Utils.capitalizeWords ===
+                            "function"
+                            ? Utils.capitalizeWords(
+                                driverNameInput.value
+                            )
+                            : driverNameInput.value.trim();
+
+                    if (!driverName) {
+                        showError();
+                        return;
+                    }
+
+
+                    button.disabled = true;
+                    button.setAttribute(
+                        "aria-busy",
+                        "true"
+                    );
+
+
+                    try {
+                        if (
+                            Storage &&
+                            typeof Storage.saveProfile ===
+                                "function"
+                        ) {
+                            const currentProfile =
+                                typeof Storage.getProfile ===
+                                    "function"
+                                    ? Storage.getProfile()
+                                    : {};
+
+                            Storage.saveProfile({
+                                ...currentProfile,
+                                driverName
+                            });
+                        }
+
+                        window.location.href =
+                            "welcome.html";
+
+                    } catch (exception) {
+                        console.error(
+                            "Errore durante il salvataggio del profilo:",
+                            exception
+                        );
+
+                        button.disabled = false;
+
+                        button.removeAttribute(
+                            "aria-busy"
+                        );
+                    }
+                }
+            );
+
+
+            driverNameInput.focus();
+
+        })();
+    </script>
 
 </body>
-
 </html>
