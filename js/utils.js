@@ -1,1614 +1,940 @@
-```javascript
 /*
-    ============================================================
-    CTL MANAGER
-    utils.js
-
-    Funzioni generali utilizzate in tutta l'applicazione.
-
-    Contiene:
-    - gestione date
-    - gestione orari
-    - formattazione testi
-    - numeri di telefono
-    - confronto date
-    - ordinamento prenotazioni
-    - saluto dinamico
-    - funzioni DOM
-    - utilità varie
-    ============================================================
-*/
-
-"use strict";
-
-
-/* ============================================================
-   DOM
-   ============================================================ */
-
-/**
- * Recupera un elemento tramite ID.
+ * =========================================================
+ * CTL MANAGER
+ * Utility Functions
+ * =========================================================
  */
-function getElement(id) {
 
-    return document.getElementById(id);
+(function (window) {
+    "use strict";
 
-}
 
+    /* =====================================================
+       STRINGHE
+       ===================================================== */
 
-/**
- * Crea un elemento HTML.
- */
-function createElement(
-    tagName,
-    className = "",
-    textContent = ""
-) {
-
-    const element =
-        document.createElement(tagName);
-
-
-    if (className) {
-
-        element.className =
-            className;
-
-    }
-
-
-    if (textContent) {
-
-        element.textContent =
-            textContent;
-
-    }
-
-
-    return element;
-
-}
-
-
-/**
- * Mostra un elemento.
- */
-function showElement(element) {
-
-    if (!element) {
-        return;
-    }
-
-
-    element.hidden = false;
-
-}
-
-
-/**
- * Nasconde un elemento.
- */
-function hideElement(element) {
-
-    if (!element) {
-        return;
-    }
-
-
-    element.hidden = true;
-
-}
-
-
-/* ============================================================
-   STRINGHE
-   ============================================================ */
-
-/**
- * Rimuove spazi inutili.
- */
-function cleanText(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    return String(value)
-        .replace(/\s+/g, " ")
-        .trim();
-
-}
-
-
-/**
- * Prima lettera maiuscola.
- */
-function capitalize(value) {
-
-    const text =
-        cleanText(value);
-
-
-    if (!text) {
-        return "";
-    }
-
-
-    return (
-        text.charAt(0).toUpperCase() +
-        text.slice(1)
-    );
-
-}
-
-
-/**
- * Converte un nome in formato leggibile.
- */
-function formatName(value) {
-
-    const text =
-        cleanText(value);
-
-
-    if (!text) {
-        return "";
-    }
-
-
-    return text
-        .toLowerCase()
-        .split(" ")
-        .filter(Boolean)
-        .map(
-            word =>
-                word.charAt(0).toUpperCase() +
-                word.slice(1)
-        )
-        .join(" ");
-
-}
-
-
-/**
- * Tronca un testo senza spezzare inutilmente le parole.
- */
-function truncateText(
-    value,
-    maxLength = 100
-) {
-
-    const text =
-        cleanText(value);
-
-
-    if (text.length <= maxLength) {
-        return text;
-    }
-
-
-    return (
-        text
-            .substring(0, maxLength)
-            .trimEnd() +
-        "..."
-    );
-
-}
-
-
-/* ============================================================
-   DATE
-   ============================================================ */
-
-/**
- * Restituisce la data odierna nel formato YYYY-MM-DD.
- */
-function getTodayISO() {
-
-    const now =
-        new Date();
-
-
-    return formatDateISO(now);
-
-}
-
-
-/**
- * Converte una Date nel formato YYYY-MM-DD.
- */
-function formatDateISO(date) {
-
-    if (!(date instanceof Date)) {
-
-        date =
-            new Date(date);
-
-    }
-
-
-    if (Number.isNaN(date.getTime())) {
-
-        return "";
-
-    }
-
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
-
-
-    return (
-        year +
-        "-" +
-        month +
-        "-" +
-        day
-    );
-
-}
-
-
-/**
- * Converte YYYY-MM-DD in Date locale.
- */
-function parseDateISO(dateString) {
-
-    if (!dateString) {
-        return null;
-    }
-
-
-    const parts =
-        String(dateString)
-            .split("-");
-
-
-    if (parts.length !== 3) {
-        return null;
-    }
-
-
-    const year =
-        Number(parts[0]);
-
-
-    const month =
-        Number(parts[1]) - 1;
-
-
-    const day =
-        Number(parts[2]);
-
-
-    const date =
-        new Date(
-            year,
-            month,
-            day
-        );
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return null;
-
-    }
-
-
-    return date;
-
-}
-
-
-/**
- * Formatta una data in italiano.
- *
- * Esempio:
- * 2026-09-02 -> mer 2 set
- */
-function formatShortDate(dateString) {
-
-    const date =
-        parseDateISO(dateString);
-
-
-    if (!date) {
-        return "";
-    }
-
-
-    return new Intl.DateTimeFormat(
-        "it-IT",
-        {
-            weekday: "short",
-            day: "numeric",
-            month: "short"
-        }
-    ).format(date);
-
-}
-
-
-/**
- * Formatta una data in modo esteso.
- *
- * Esempio:
- * 2 settembre 2026
- */
-function formatLongDate(dateString) {
-
-    const date =
-        parseDateISO(dateString);
-
-
-    if (!date) {
-        return "";
-    }
-
-
-    return new Intl.DateTimeFormat(
-        "it-IT",
-        {
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        }
-    ).format(date);
-
-}
-
-
-/**
- * Restituisce il giorno della settimana.
- */
-function getWeekdayName(
-    dateString,
-    short = false
-) {
-
-    const date =
-        parseDateISO(dateString);
-
-
-    if (!date) {
-        return "";
-    }
-
-
-    return new Intl.DateTimeFormat(
-        "it-IT",
-        {
-            weekday:
-                short
-                    ? "short"
-                    : "long"
-        }
-    ).format(date);
-
-}
-
-
-/**
- * Verifica se una data è oggi.
- */
-function isToday(dateString) {
-
-    return (
-        dateString ===
-        getTodayISO()
-    );
-
-}
-
-
-/**
- * Verifica se una data è nel passato.
- */
-function isDateBeforeToday(
-    dateString
-) {
-
-    const date =
-        parseDateISO(dateString);
-
-
-    if (!date) {
-        return false;
-    }
-
-
-    const today =
-        parseDateISO(
-            getTodayISO()
-        );
-
-
-    return date < today;
-
-}
-
-
-/**
- * Verifica se una data è nel futuro.
- */
-function isDateAfterToday(
-    dateString
-) {
-
-    const date =
-        parseDateISO(dateString);
-
-
-    if (!date) {
-        return false;
-    }
-
-
-    const today =
-        parseDateISO(
-            getTodayISO()
-        );
-
-
-    return date > today;
-
-}
-
-
-/**
- * Aggiunge o sottrae giorni a una data.
- */
-function addDays(
-    dateString,
-    amount
-) {
-
-    const date =
-        parseDateISO(dateString);
-
-
-    if (!date) {
-        return "";
-    }
-
-
-    date.setDate(
-        date.getDate() + Number(amount)
-    );
-
-
-    return formatDateISO(date);
-
-}
-
-
-/* ============================================================
-   ORARI
-   ============================================================ */
-
-/**
- * Normalizza un orario.
- *
- * Esempi:
- * "9"     -> "09:00"
- * "9:30"  -> "09:30"
- * "0930"  -> "09:30"
- * "18"    -> "18:00"
- */
-function normalizeTime(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    let time =
-        String(value)
-            .trim()
-            .toLowerCase();
-
-
-    if (!time) {
-        return "";
-    }
-
-
-    time =
-        time.replace(/\s+/g, "");
-
-
-    /*
-        Formato HH:MM
-    */
-    let match =
-        time.match(
-            /^(\d{1,2})[:.](\d{1,2})$/
-        );
-
-
-    if (match) {
-
-        let hours =
-            Number(match[1]);
-
-        let minutes =
-            Number(match[2]);
-
-
+    function cleanText(value) {
         if (
-            hours >= 0 &&
-            hours <= 23 &&
-            minutes >= 0 &&
-            minutes <= 59
+            value === null ||
+            value === undefined
         ) {
-
-            return (
-                String(hours).padStart(2, "0") +
-                ":" +
-                String(minutes).padStart(2, "0")
-            );
-
+            return "";
         }
 
-    }
-
-
-    /*
-        Formato HHMM
-    */
-    match =
-        time.match(
-            /^(\d{2})(\d{2})$/
-        );
-
-
-    if (match) {
-
-        const hours =
-            Number(match[1]);
-
-
-        const minutes =
-            Number(match[2]);
-
-
-        if (
-            hours >= 0 &&
-            hours <= 23 &&
-            minutes >= 0 &&
-            minutes <= 59
-        ) {
-
-            return (
-                String(hours).padStart(2, "0") +
-                ":" +
-                String(minutes).padStart(2, "0")
-            );
-
-        }
-
-    }
-
-
-    /*
-        Solo ore.
-    */
-    match =
-        time.match(
-            /^(\d{1,2})$/
-        );
-
-
-    if (match) {
-
-        const hours =
-            Number(match[1]);
-
-
-        if (
-            hours >= 0 &&
-            hours <= 23
-        ) {
-
-            return (
-                String(hours).padStart(2, "0") +
-                ":00"
-            );
-
-        }
-
-    }
-
-
-    return "";
-
-}
-
-
-/**
- * Confronta due orari HH:MM.
- */
-function compareTimes(
-    timeA,
-    timeB
-) {
-
-    const a =
-        normalizeTime(timeA);
-
-
-    const b =
-        normalizeTime(timeB);
-
-
-    if (!a && !b) {
-        return 0;
-    }
-
-
-    if (!a) {
-        return 1;
-    }
-
-
-    if (!b) {
-        return -1;
-    }
-
-
-    return a.localeCompare(b);
-
-}
-
-
-/**
- * Converte un orario in minuti.
- */
-function timeToMinutes(time) {
-
-    const normalized =
-        normalizeTime(time);
-
-
-    if (!normalized) {
-        return null;
-    }
-
-
-    const [
-        hours,
-        minutes
-    ] =
-        normalized
-            .split(":")
-            .map(Number);
-
-
-    return (
-        hours * 60 +
-        minutes
-    );
-
-}
-
-
-/* ============================================================
-   PRENOTAZIONI
-   ============================================================ */
-
-/**
- * Confronta due prenotazioni per data e ora.
- */
-function compareBookings(
-    bookingA,
-    bookingB
-) {
-
-    const dateA =
-        bookingA.date || "";
-
-
-    const dateB =
-        bookingB.date || "";
-
-
-    if (dateA !== dateB) {
-
-        return dateA.localeCompare(
-            dateB
-        );
-
-    }
-
-
-    return compareTimes(
-        bookingA.time,
-        bookingB.time
-    );
-
-}
-
-
-/**
- * Ordina le prenotazioni cronologicamente.
- */
-function sortBookings(
-    bookings,
-    descending = false
-) {
-
-    const sorted =
-        [...bookings].sort(
-            compareBookings
-        );
-
-
-    if (descending) {
-
-        sorted.reverse();
-
-    }
-
-
-    return sorted;
-
-}
-
-
-/**
- * Restituisce le prenotazioni di una determinata data.
- */
-function getBookingsForDate(
-    bookings,
-    dateString
-) {
-
-    return bookings.filter(
-        booking =>
-            booking.date === dateString
-    );
-
-}
-
-
-/**
- * Restituisce le prenotazioni di oggi.
- */
-function getTodayBookings(
-    bookings
-) {
-
-    return getBookingsForDate(
-        bookings,
-        getTodayISO()
-    );
-
-}
-
-
-/**
- * Conta le prenotazioni di oggi.
- */
-function countTodayBookings(
-    bookings
-) {
-
-    return getTodayBookings(
-        bookings
-    ).length;
-
-}
-
-
-/* ============================================================
-   NUMERI DI TELEFONO
-   ============================================================ */
-
-/**
- * Normalizza un numero italiano.
- *
- * Gestisce:
- * +39 333 1234567
- * 0039 333 1234567
- * 333 1234567
- */
-function normalizePhone(
-    phone
-) {
-
-    if (
-        phone === null ||
-        phone === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    let value =
-        String(phone)
+        return String(value)
+            .replace(/\s+/g, " ")
             .trim();
+    }
 
 
-    if (!value) {
+    function capitalize(value) {
+        const text = cleanText(value);
+
+        if (!text) {
+            return "";
+        }
+
+        return (
+            text.charAt(0).toUpperCase() +
+            text.slice(1)
+        );
+    }
+
+
+    function capitalizeWords(value) {
+        const text = cleanText(value);
+
+        if (!text) {
+            return "";
+        }
+
+        return text
+            .split(" ")
+            .map(word => {
+                if (!word) {
+                    return "";
+                }
+
+                return (
+                    word.charAt(0).toUpperCase() +
+                    word.slice(1).toLowerCase()
+                );
+            })
+            .join(" ");
+    }
+
+
+    /* =====================================================
+       HTML SECURITY
+       ===================================================== */
+
+    function escapeHTML(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+    /* =====================================================
+       DATE
+       ===================================================== */
+
+    function parseDate(dateString) {
+        if (!dateString) {
+            return null;
+        }
+
+        const parts =
+            String(dateString).split("-");
+
+        if (parts.length !== 3) {
+            return null;
+        }
+
+        const year = Number(parts[0]);
+        const month = Number(parts[1]);
+        const day = Number(parts[2]);
+
+        if (
+            !Number.isInteger(year) ||
+            !Number.isInteger(month) ||
+            !Number.isInteger(day)
+        ) {
+            return null;
+        }
+
+        const date =
+            new Date(
+                year,
+                month - 1,
+                day
+            );
+
+        if (
+            date.getFullYear() !== year ||
+            date.getMonth() !== month - 1 ||
+            date.getDate() !== day
+        ) {
+            return null;
+        }
+
+        return date;
+    }
+
+
+    function formatDate(
+        dateString,
+        options = {}
+    ) {
+        const date =
+            parseDate(dateString);
+
+        if (!date) {
+            return "";
+        }
+
+        const defaultOptions = {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        };
+
+        return new Intl.DateTimeFormat(
+            "it-IT",
+            {
+                ...defaultOptions,
+                ...options
+            }
+        ).format(date);
+    }
+
+
+    function formatLongDate(dateString) {
+        return formatDate(
+            dateString,
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }
+        );
+    }
+
+
+    function formatShortDate(dateString) {
+        return formatDate(
+            dateString,
+            {
+                day: "numeric",
+                month: "short"
+            }
+        );
+    }
+
+
+    function getDayName(dateString) {
+        return formatDate(
+            dateString,
+            {
+                weekday: "long"
+            }
+        );
+    }
+
+
+    function getMonthName(
+        month,
+        locale = "it-IT"
+    ) {
+        const monthNumber =
+            Number(month);
+
+        if (
+            !Number.isInteger(monthNumber) ||
+            monthNumber < 1 ||
+            monthNumber > 12
+        ) {
+            return "";
+        }
+
+        const date =
+            new Date(
+                2000,
+                monthNumber - 1,
+                1
+            );
+
+        return new Intl.DateTimeFormat(
+            locale,
+            {
+                month: "long"
+            }
+        ).format(date);
+    }
+
+
+    function getTodayDateString() {
+        const now = new Date();
+
+        return [
+            now.getFullYear(),
+            String(
+                now.getMonth() + 1
+            ).padStart(2, "0"),
+            String(
+                now.getDate()
+            ).padStart(2, "0")
+        ].join("-");
+    }
+
+
+    function isToday(dateString) {
+        return (
+            dateString ===
+            getTodayDateString()
+        );
+    }
+
+
+    function isSameDate(
+        firstDate,
+        secondDate
+    ) {
+        return (
+            cleanText(firstDate) ===
+            cleanText(secondDate)
+        );
+    }
+
+
+    /* =====================================================
+       ORARI
+       ===================================================== */
+
+    function normalizeTime(time) {
+        if (!time) {
+            return "";
+        }
+
+        const value =
+            cleanText(time);
+
+        /*
+         * Formato HH:MM
+         */
+        const standard =
+            value.match(
+                /^(\d{1,2})[:.](\d{1,2})$/
+            );
+
+        if (standard) {
+            const hours =
+                Number(standard[1]);
+
+            const minutes =
+                Number(standard[2]);
+
+            if (
+                hours >= 0 &&
+                hours <= 23 &&
+                minutes >= 0 &&
+                minutes <= 59
+            ) {
+                return (
+                    String(hours)
+                        .padStart(2, "0") +
+                    ":" +
+                    String(minutes)
+                        .padStart(2, "0")
+                );
+            }
+        }
+
+        /*
+         * Formato HH
+         */
+        const onlyHours =
+            value.match(
+                /^(\d{1,2})$/
+            );
+
+        if (onlyHours) {
+            const hours =
+                Number(onlyHours[1]);
+
+            if (
+                hours >= 0 &&
+                hours <= 23
+            ) {
+                return (
+                    String(hours)
+                        .padStart(2, "0") +
+                    ":00"
+                );
+            }
+        }
+
         return "";
     }
 
 
-    /*
-        Manteniamo soltanto numeri
-        e il simbolo + iniziale.
-    */
-    value =
-        value.replace(
-            /[^\d+]/g,
-            ""
+    function formatTime(time) {
+        const normalized =
+            normalizeTime(time);
+
+        return normalized || "--:--";
+    }
+
+
+    function timeToMinutes(time) {
+        const normalized =
+            normalizeTime(time);
+
+        if (!normalized) {
+            return null;
+        }
+
+        const parts =
+            normalized.split(":");
+
+        return (
+            Number(parts[0]) * 60 +
+            Number(parts[1])
         );
+    }
 
 
-    /*
-        0039 -> +39
-    */
-    if (
-        value.startsWith("0039")
+    function compareTimes(
+        firstTime,
+        secondTime
     ) {
+        const first =
+            timeToMinutes(firstTime);
 
-        value =
-            "+39" +
-            value.substring(4);
+        const second =
+            timeToMinutes(secondTime);
 
+        if (first === null && second === null) {
+            return 0;
+        }
+
+        if (first === null) {
+            return 1;
+        }
+
+        if (second === null) {
+            return -1;
+        }
+
+        return first - second;
     }
 
 
-    /*
-        Numero italiano senza prefisso.
-    */
-    if (
-        !value.startsWith("+") &&
-        value.startsWith("3") &&
-        value.length >= 9 &&
-        value.length <= 10
+    /* =====================================================
+       TELEFONO
+       ===================================================== */
+
+    function formatPhone(phone) {
+        const value =
+            cleanText(phone);
+
+        if (!value) {
+            return "";
+        }
+
+        /*
+         * Manteniamo il numero leggibile
+         * senza modificarne il valore.
+         */
+        return value;
+    }
+
+
+    function getTelLink(phone) {
+        if (!phone) {
+            return "";
+        }
+
+        const normalized =
+            String(phone)
+                .replace(/[^\d+]/g, "");
+
+        if (!normalized) {
+            return "";
+        }
+
+        return `tel:${normalized}`;
+    }
+
+
+    /* =====================================================
+       SALUTO
+       ===================================================== */
+
+    function getGreeting(
+        date = new Date()
     ) {
+        const hour =
+            date.getHours();
 
-        value =
-            "+39" +
-            value;
+        if (hour >= 5 && hour < 12) {
+            return "Buongiorno";
+        }
 
+        if (hour >= 12 && hour < 18) {
+            return "Buon pomeriggio";
+        }
+
+        if (hour >= 18 && hour < 23) {
+            return "Buonasera";
+        }
+
+        return "Buonanotte";
     }
 
 
-    return value;
-
-}
-
-
-/**
- * Verifica se un numero di telefono
- * sembra valido.
- */
-function isValidPhone(
-    phone
-) {
-
-    const normalized =
-        normalizePhone(phone);
-
-
-    if (!normalized) {
-        return false;
-    }
-
-
-    /*
-        Per l'app accettiamo anche numeri
-        internazionali, evitando controlli
-        eccessivamente rigidi.
-    */
-    const digits =
-        normalized.replace(
-            /\D/g,
-            ""
-        );
-
-
-    return (
-        digits.length >= 8 &&
-        digits.length <= 15
-    );
-
-}
-
-
-/**
- * Formatta un numero per la visualizzazione.
- */
-function formatPhone(
-    phone
-) {
-
-    const normalized =
-        normalizePhone(phone);
-
-
-    if (!normalized) {
-        return "";
-    }
-
-
-    return normalized;
-
-}
-
-
-/**
- * Confronta due numeri ignorando
- * spazi e prefissi italiani.
- */
-function phonesMatch(
-    phoneA,
-    phoneB
-) {
-
-    const a =
-        normalizePhone(phoneA);
-
-
-    const b =
-        normalizePhone(phoneB);
-
-
-    if (!a || !b) {
-        return false;
-    }
-
-
-    const digitsA =
-        a.replace(/\D/g, "");
-
-
-    const digitsB =
-        b.replace(/\D/g, "");
-
-
-    if (digitsA === digitsB) {
-        return true;
-    }
-
-
-    /*
-        Confronto aggiuntivo per numeri italiani
-        nel caso uno abbia 39 e l'altro no.
-    */
-    const without39A =
-        digitsA.startsWith("39")
-            ? digitsA.substring(2)
-            : digitsA;
-
-
-    const without39B =
-        digitsB.startsWith("39")
-            ? digitsB.substring(2)
-            : digitsB;
-
-
-    return (
-        without39A ===
-        without39B
-    );
-
-}
-
-
-/* ============================================================
-   SALUTO DINAMICO
-   ============================================================ */
-
-/**
- * Restituisce il saluto in base all'orario.
- */
-function getDynamicGreeting(
-    date = new Date()
-) {
-
-    const hour =
-        date.getHours();
-
-
-    if (hour >= 5 && hour < 12) {
-
-        return "Buongiorno";
-
-    }
-
-
-    if (hour >= 12 && hour < 18) {
-
-        return "Buon pomeriggio";
-
-    }
-
-
-    if (hour >= 18 && hour < 23) {
-
-        return "Buonasera";
-
-    }
-
-
-    return "Buonanotte";
-
-}
-
-
-/**
- * Crea il saluto completo.
- *
- * Esempio:
- * "Buongiorno Francesco"
- */
-function getPersonalGreeting(
-    name
-) {
-
-    const greeting =
-        getDynamicGreeting();
-
-
-    const formattedName =
-        formatName(name);
-
-
-    if (!formattedName) {
-
-        return greeting;
-
-    }
-
-
-    return (
-        greeting +
-        " " +
-        formattedName
-    );
-
-}
-
-
-/* ============================================================
-   BLACKLIST
-   ============================================================ */
-
-/**
- * Verifica se una prenotazione
- * appartiene a un numero presente
- * nella blacklist.
- */
-function findBlacklistedCustomer(
-    phone,
-    blacklist
-) {
-
-    if (!phone || !Array.isArray(blacklist)) {
-
-        return null;
-
-    }
-
-
-    return blacklist.find(
-        entry =>
-            phonesMatch(
-                phone,
-                entry.phone
-            )
-    ) || null;
-
-}
-
-
-/**
- * Verifica direttamente se il numero
- * è nella blacklist.
- */
-function isPhoneBlacklisted(
-    phone,
-    blacklist
-) {
-
-    return Boolean(
-        findBlacklistedCustomer(
-            phone,
-            blacklist
-        )
-    );
-
-}
-
-
-/* ============================================================
-   GENERAZIONE ID
-   ============================================================ */
-
-/**
- * Crea un ID univoco generico.
- */
-function generateId(
-    prefix = "item"
-) {
-
-    return (
-        prefix +
-        "-" +
-        Date.now() +
-        "-" +
-        Math.random()
-            .toString(36)
-            .substring(2, 10)
-    );
-
-}
-
-
-/* ============================================================
-   SICUREZZA TESTO HTML
-   ============================================================ */
-
-/**
- * Evita che testo proveniente
- * dall'utente venga interpretato
- * come HTML.
- */
-function escapeHtml(value) {
-
-    if (
-        value === null ||
-        value === undefined
+    /* =====================================================
+       PLURALE
+       ===================================================== */
+
+    function pluralize(
+        count,
+        singular,
+        plural
     ) {
-
-        return "";
-
+        return Number(count) === 1
+            ? singular
+            : plural;
     }
 
 
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
+    /* =====================================================
+       CORSE
+       ===================================================== */
+
+    function getRideLabel(count) {
+        return pluralize(
+            count,
+            "corsa",
+            "corse"
         );
-
-}
-
-
-/* ============================================================
-   DEBOUNCE
-   ============================================================ */
-
-/**
- * Evita di eseguire continuamente
- * una funzione durante la digitazione.
- */
-function debounce(
-    callback,
-    delay = 300
-) {
-
-    let timeoutId;
+    }
 
 
-    return function (...args) {
-
-        clearTimeout(
-            timeoutId
+    function getPassengerLabel(count) {
+        return pluralize(
+            count,
+            "passeggero",
+            "passeggeri"
         );
+    }
 
 
-        timeoutId =
-            setTimeout(
+    /* =====================================================
+       NOME CLIENTE
+       ===================================================== */
+
+    function getFullName(
+        firstName,
+        lastName
+    ) {
+        return [
+            cleanText(firstName),
+            cleanText(lastName)
+        ]
+            .filter(Boolean)
+            .join(" ");
+    }
+
+
+    function getInitials(
+        firstName,
+        lastName
+    ) {
+        const first =
+            cleanText(firstName);
+
+        const last =
+            cleanText(lastName);
+
+        const initials = [];
+
+        if (first) {
+            initials.push(
+                first.charAt(0)
+            );
+        }
+
+        if (last) {
+            initials.push(
+                last.charAt(0)
+            );
+        }
+
+        if (!initials.length) {
+            return "?";
+        }
+
+        return initials
+            .join("")
+            .toUpperCase();
+    }
+
+
+    /* =====================================================
+       INDIRIZZI
+       ===================================================== */
+
+    function shortenAddress(
+        address,
+        maxLength = 45
+    ) {
+        const text =
+            cleanText(address);
+
+        if (
+            text.length <= maxLength
+        ) {
+            return text;
+        }
+
+        return (
+            text.slice(
+                0,
+                Math.max(
+                    0,
+                    maxLength - 3
+                )
+            ).trim() +
+            "..."
+        );
+    }
+
+
+    /* =====================================================
+       DEBOUNCE
+       ===================================================== */
+
+    function debounce(
+        callback,
+        delay = 250
+    ) {
+        let timer = null;
+
+        return function (...args) {
+            clearTimeout(timer);
+
+            timer = setTimeout(
                 () => {
-
                     callback.apply(
                         this,
                         args
                     );
-
                 },
                 delay
             );
-
-    };
-
-}
-
-
-/* ============================================================
-   CLIPBOARD
-   ============================================================ */
-
-/**
- * Copia un testo negli appunti.
- */
-async function copyToClipboard(
-    text
-) {
-
-    try {
-
-        await navigator.clipboard.writeText(
-            String(text || "")
-        );
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Errore copia clipboard:",
-            error
-        );
-
-        return false;
-
+        };
     }
 
-}
 
+    /* =====================================================
+       THROTTLE
+       ===================================================== */
 
-/* ============================================================
-   DOWNLOAD FILE
-   ============================================================ */
+    function throttle(
+        callback,
+        delay = 200
+    ) {
+        let lastExecution = 0;
 
-/**
- * Crea un download locale.
- */
-function downloadFile(
-    content,
-    filename,
-    mimeType = "text/plain"
-) {
+        return function (...args) {
+            const now =
+                Date.now();
 
-    const blob =
-        new Blob(
-            [content],
-            {
-                type: mimeType
+            if (
+                now - lastExecution >=
+                delay
+            ) {
+                lastExecution = now;
+
+                callback.apply(
+                    this,
+                    args
+                );
             }
+        };
+    }
+
+
+    /* =====================================================
+       DOM
+       ===================================================== */
+
+    function $(selector, parent = document) {
+        return parent.querySelector(
+            selector
+        );
+    }
+
+
+    function $$(selector, parent = document) {
+        return Array.from(
+            parent.querySelectorAll(
+                selector
+            )
+        );
+    }
+
+
+    function createElement(
+        tag,
+        options = {}
+    ) {
+        const element =
+            document.createElement(tag);
+
+        if (options.className) {
+            element.className =
+                options.className;
+        }
+
+        if (options.id) {
+            element.id =
+                options.id;
+        }
+
+        if (
+            options.text !== undefined
+        ) {
+            element.textContent =
+                options.text;
+        }
+
+        if (options.html !== undefined) {
+            element.innerHTML =
+                options.html;
+        }
+
+        if (options.attributes) {
+            Object.entries(
+                options.attributes
+            ).forEach(
+                ([name, value]) => {
+                    element.setAttribute(
+                        name,
+                        value
+                    );
+                }
+            );
+        }
+
+        return element;
+    }
+
+
+    /* =====================================================
+       STORAGE EVENT
+       ===================================================== */
+
+    function onStorageChange(
+        callback
+    ) {
+        if (
+            typeof callback !==
+            "function"
+        ) {
+            return () => {};
+        }
+
+        const handler = event => {
+            callback(event);
+        };
+
+        window.addEventListener(
+            "storage",
+            handler
         );
 
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement("a");
+        return () => {
+            window.removeEventListener(
+                "storage",
+                handler
+            );
+        };
+    }
 
 
-    link.href =
-        url;
+    /* =====================================================
+       CLIPBOARD
+       ===================================================== */
 
+    async function copyToClipboard(text) {
+        const value =
+            String(text ?? "");
 
-    link.download =
-        filename;
+        if (!value) {
+            return false;
+        }
 
-
-    document.body.appendChild(
-        link
-    );
-
-
-    link.click();
-
-
-    link.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
-
-/* ============================================================
-   LETTURA FILE
-   ============================================================ */
-
-/**
- * Legge un file testuale.
- */
-function readTextFile(
-    file
-) {
-
-    return new Promise(
-        (resolve, reject) => {
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload =
-                () => {
-
-                    resolve(
-                        reader.result
-                    );
-
-                };
-
-
-            reader.onerror =
-                () => {
-
-                    reject(
-                        reader.error
-                    );
-
-                };
-
-
-            reader.readAsText(
-                file
+        try {
+            await navigator.clipboard.writeText(
+                value
             );
 
+            return true;
+        } catch {
+            /*
+             * Fallback per browser che non
+             * consentono navigator.clipboard.
+             */
+            try {
+                const textarea =
+                    document.createElement(
+                        "textarea"
+                    );
+
+                textarea.value =
+                    value;
+
+                textarea.style.position =
+                    "fixed";
+
+                textarea.style.opacity =
+                    "0";
+
+                document.body.appendChild(
+                    textarea
+                );
+
+                textarea.focus();
+                textarea.select();
+
+                const success =
+                    document.execCommand(
+                        "copy"
+                    );
+
+                textarea.remove();
+
+                return success;
+            } catch {
+                return false;
+            }
         }
-    );
-
-}
-
-
-/* ============================================================
-   ARRAY
-   ============================================================ */
-
-/**
- * Rimuove duplicati da un array.
- */
-function uniqueArray(
-    array
-) {
-
-    if (!Array.isArray(array)) {
-
-        return [];
-
     }
 
 
-    return [
-        ...new Set(array)
-    ];
+    /* =====================================================
+       FILE DOWNLOAD
+       ===================================================== */
 
-}
+    function downloadFile(
+        content,
+        filename,
+        type = "application/json"
+    ) {
+        const blob =
+            new Blob(
+                [content],
+                { type }
+            );
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+        link.href = url;
+        link.download =
+            filename;
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+
+        link.remove();
+
+        setTimeout(
+            () => {
+                URL.revokeObjectURL(
+                    url
+                );
+            },
+            1000
+        );
+    }
 
 
-/**
- * Divide un array in gruppi.
- */
-function groupBy(
-    array,
-    keyFunction
-) {
+    /* =====================================================
+       EXPORT JSON
+       ===================================================== */
 
-    return array.reduce(
-        (
-            groups,
-            item
-        ) => {
+    function downloadJSON(
+        data,
+        filename = "ctl-manager-backup.json"
+    ) {
+        const json =
+            JSON.stringify(
+                data,
+                null,
+                2
+            );
 
+        downloadFile(
+            json,
+            filename,
+            "application/json"
+        );
+    }
+
+
+    /* =====================================================
+       ARRAY HELPERS
+       ===================================================== */
+
+    function uniqueBy(
+        array,
+        keyFunction
+    ) {
+        const seen =
+            new Set();
+
+        return array.filter(item => {
             const key =
                 keyFunction(item);
 
-
-            if (!groups[key]) {
-
-                groups[key] = [];
-
+            if (seen.has(key)) {
+                return false;
             }
 
+            seen.add(key);
 
-            groups[key].push(
-                item
-            );
-
-
-            return groups;
-
-        },
-        {}
-    );
-
-}
-
-
-/* ============================================================
-   NUMERI
-   ============================================================ */
-
-/**
- * Converte un valore in numero
- * senza restituire NaN.
- */
-function safeNumber(
-    value,
-    fallback = 0
-) {
-
-    const number =
-        Number(value);
-
-
-    return Number.isFinite(number)
-        ? number
-        : fallback;
-
-}
-
-
-/* ============================================================
-   LOCAL STORAGE UTILITY
-   ============================================================ */
-
-/**
- * Verifica se localStorage è disponibile.
- */
-function isLocalStorageAvailable() {
-
-    try {
-
-        const testKey =
-            "__ctl_manager_test__";
-
-
-        localStorage.setItem(
-            testKey,
-            "1"
-        );
-
-
-        localStorage.removeItem(
-            testKey
-        );
-
-
-        return true;
-
-    } catch (error) {
-
-        return false;
-
-    }
-
-}
-
-
-/* ============================================================
-   DEVICE
-   ============================================================ */
-
-/**
- * Determina se il dispositivo sembra mobile.
- */
-function isMobileDevice() {
-
-    return (
-        window.innerWidth <= 768
-    );
-
-}
-
-
-/* ============================================================
-   SCROLL
-   ============================================================ */
-
-/**
- * Porta un elemento in vista.
- */
-function scrollToElement(
-    element,
-    behavior = "smooth"
-) {
-
-    if (!element) {
-        return;
+            return true;
+        });
     }
 
 
-    element.scrollIntoView({
-        behavior,
-        block: "center"
+    /* =====================================================
+       SAFE NUMBER
+       ===================================================== */
+
+    function safeNumber(
+        value,
+        fallback = 0
+    ) {
+        const number =
+            Number(value);
+
+        return Number.isFinite(number)
+            ? number
+            : fallback;
+    }
+
+
+    /* =====================================================
+       PUBLIC API
+       ===================================================== */
+
+    window.CTLUtils = Object.freeze({
+        cleanText,
+        capitalize,
+        capitalizeWords,
+        escapeHTML,
+
+        parseDate,
+        formatDate,
+        formatLongDate,
+        formatShortDate,
+        getDayName,
+        getMonthName,
+        getTodayDateString,
+        isToday,
+        isSameDate,
+
+        normalizeTime,
+        formatTime,
+        timeToMinutes,
+        compareTimes,
+
+        formatPhone,
+        getTelLink,
+
+        getGreeting,
+
+        pluralize,
+        getRideLabel,
+        getPassengerLabel,
+
+        getFullName,
+        getInitials,
+
+        shortenAddress,
+
+        debounce,
+        throttle,
+
+        $,
+        $$,
+        createElement,
+
+        onStorageChange,
+
+        copyToClipboard,
+
+        downloadFile,
+        downloadJSON,
+
+        uniqueBy,
+        safeNumber
     });
 
-}
-
-
-/* ============================================================
-   EVENTI
-   ============================================================ */
-
-/**
- * Aggiunge un listener in modo sicuro.
- */
-function on(
-    element,
-    eventName,
-    callback,
-    options
-) {
-
-    if (!element) {
-        return;
-    }
-
-
-    element.addEventListener(
-        eventName,
-        callback,
-        options
-    );
-
-}
-
-
-/* ============================================================
-   ESPORTAZIONE FUNZIONI
-   ============================================================ */
-
-/*
-    I file JS del progetto vengono caricati
-    direttamente tramite <script>.
-
-    Le funzioni rimangono quindi disponibili
-    globalmente e possono essere utilizzate
-    da app.js, parser.js e dagli altri moduli.
-*/
-```
+})(window);
